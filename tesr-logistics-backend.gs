@@ -2,7 +2,7 @@
  * TESR Logistics — Fulfillment QC & Evidence backend (Google Apps Script)   v1.0
  * ---------------------------------------------------------------------------
  * 1 Record = 1 โฟลเดอร์ใน Google Drive:
- *   Logistic-tracking-and-evidence / [ลูกค้า (ถ้าระบุ)] / <TagNo>_<ผู้แท็ก>_<DD-MM-YYYY>
+ *   Logistic-tracking-and-evidence / [ลูกค้า (ถ้าระบุ)] / <TrackingNo>_<ผู้แท็ก>_<DD-MM-YYYY>
  *
  * Login 2 แบบ (ตรวจที่ฝั่ง server ทุกครั้ง):
  *   • Google Sign-In  — ส่ง ID token มาตรวจกับ Google (ต้องตั้ง Google Client ID ในหน้า Admin)
@@ -40,7 +40,7 @@ const CONFIG = {
     staff:         [],     // ชื่อผู้แท็กเพิ่มเติม (นอกเหนือจากพนักงานใน Work tracking log)
     clients:       [],
     checklist:     ['สินค้าตรงรุ่น / SKU', 'จำนวนครบตามออเดอร์', 'สภาพสินค้าไม่มีความเสียหาย', 'อุปกรณ์ / อะไหล่ครบ', 'ฉลาก / บาร์โค้ดถูกต้อง', 'แพ็คกิ้งเรียบร้อย พร้อมส่ง'],
-    tagPattern:    '',     // regex ตรวจรูปแบบเลข Tagging (ว่าง = ไม่ตรวจ)
+    tagPattern:    '',     // regex ตรวจรูปแบบเลข Tracking (ว่าง = รับทุกขนส่ง)
     tagExample:    '',
     orderRequired: false,
     signRequired:  false,
@@ -143,7 +143,7 @@ function saveConfig_(b, s) {
     maxFileMB:   Math.max(5, Math.min(500, Number(n.maxFileMB) || cur.maxFileMB)),
     googleClientId: n.googleClientId != null ? String(n.googleClientId).trim() : cur.googleClientId,
   };
-  if (next.tagPattern) { try { new RegExp(next.tagPattern); } catch (e) { throw new Error('รูปแบบเลข Tagging (regex) ไม่ถูกต้อง: ' + e.message); } }
+  if (next.tagPattern) { try { new RegExp(next.tagPattern); } catch (e) { throw new Error('รูปแบบเลข Tracking (regex) ไม่ถูกต้อง: ' + e.message); } }
   if (next.adminEmails.indexOf(s.email) < 0) throw new Error('ห้ามลบอีเมลของตัวเองออกจากรายชื่อ Admin');
   P.setProperty('APP_CONFIG', JSON.stringify(next));
   return { ok: true, config: publicCfg_(next, 'admin') };
@@ -249,10 +249,10 @@ function setPassword_(b, s) {
 /* ═══ records ═════════════════════════════════════════════════ */
 function create_(b, s) {
   const r = b.record || {};
-  const tag = cleanCode_(r.tag);
-  if (!tag) throw new Error('ต้องมีเลข Tagging');
-  if (s.cfg.tagPattern && !(new RegExp(s.cfg.tagPattern)).test(tag)) throw new Error('เลข Tagging "' + tag + '" ไม่ตรงรูปแบบที่ Admin กำหนด' + (s.cfg.tagExample ? ' (ตัวอย่าง ' + s.cfg.tagExample + ')' : ''));
-  if (s.cfg.orderRequired && !cleanCode_(r.order)) throw new Error('ต้องมีเลขออเดอร์');
+  const tag = cleanCode_(r.tracking).toUpperCase();   // Tracking No. = เลขหลักของ record (fulfillment)
+  if (!tag) throw new Error('ต้องมีเลข Tracking');
+  if (s.cfg.tagPattern && !(new RegExp(s.cfg.tagPattern)).test(tag)) throw new Error('เลข Tracking "' + tag + '" ไม่ตรงรูปแบบที่ Admin กำหนด' + (s.cfg.tagExample ? ' (ตัวอย่าง ' + s.cfg.tagExample + ')' : ''));
+  if (s.cfg.orderRequired && !cleanCode_(r.ref)) throw new Error('ต้องมีเลขอ้างอิง (Order / Ref)');
   if (!r.tagger) throw new Error('ต้องระบุผู้แท็ก');
 
   let root;
@@ -273,9 +273,8 @@ function create_(b, s) {
     'TESR Co., Ltd. — TESR Logistics · Fulfillment QC Record',
     '========================================================',
     'Record ID     : ' + id,
-    'Tagging No.   : ' + tag,
-    'Order No.     : ' + (cleanCode_(r.order) || '-'),
-    'Tracking No.  : ' + (cleanCode_(r.tracking) || '-'),
+    'Tracking No.  : ' + tag + (r.carrier ? '  (' + r.carrier + ')' : ''),
+    'Ref / Order   : ' + (cleanCode_(r.ref) || '-'),
     'Client        : ' + (r.client || '-'),
     'Product / SKU : ' + (r.product || '-') + (r.qty ? '   ×' + r.qty : ''),
     'QC Result     : ' + (r.result || '-'),
@@ -327,7 +326,7 @@ function chunk_(b) {
 
 function finish_(b, s) {
   const r = b.record || {}, folder = folderUnderRoot_(b.folderId);
-  const row = [new Date(), r.id, cleanCode_(r.tag), cleanCode_(r.order), cleanCode_(r.tracking), r.client || '', r.product || '', r.qty || '',
+  const row = [new Date(), r.id, cleanCode_(r.tracking).toUpperCase(), r.carrier || '', cleanCode_(r.ref), r.client || '', r.product || '', r.qty || '',
     r.result || '', (r.checklist || []).map(function (c) { return (c.ok ? '✓ ' : '✗ ') + c.item; }).join('\n'),
     r.tagger || '', r.signed ? 'Yes' : 'No', s.email, b.fileCount || 0, b.folderName || folder.getName(), folder.getUrl(), r.notes || ''];
   const sh = getSheet_();
@@ -335,7 +334,7 @@ function finish_(b, s) {
   return { ok: true };
 }
 
-const COLS = ['Timestamp', 'Record ID', 'Tagging No.', 'Order No.', 'Tracking No.', 'Client', 'Product / SKU', 'Qty', 'QC Result', 'Checklist', 'Tagger', 'Signed', 'Account', 'Files', 'Folder', 'Folder URL', 'Notes'];
+const COLS = ['Timestamp', 'Record ID', 'Tracking No.', 'Carrier', 'Ref / Order No.', 'Client', 'Product / SKU', 'Qty', 'QC Result', 'Checklist', 'Tagger', 'Signed', 'Account', 'Files', 'Folder', 'Folder URL', 'Notes'];
 function search_(b) {
   const sh = getSheet_(), last = sh.getLastRow();
   if (last < 2) return { ok: true, rows: [], total: 0 };
@@ -345,11 +344,11 @@ function search_(b) {
   for (let i = vals.length - 1; i >= 0 && out.length < limit; i--) {
     const v = vals[i];
     if (q) {
-      const keys = [v[1], v[2], v[3], v[4]].map(function (x) { return String(x).replace(/^'/, '').toLowerCase(); });
-      const hit = exact ? keys.indexOf(q) >= 0 : (keys.concat([String(v[5]).toLowerCase(), String(v[6]).toLowerCase(), String(v[10]).toLowerCase()]).join(' | ').indexOf(q) >= 0);
+      const keys = [v[1], v[2], v[4]].map(function (x) { return String(x).replace(/^'/, '').toLowerCase(); });
+      const hit = exact ? keys.indexOf(q) >= 0 : (keys.concat([String(v[3]).toLowerCase(), String(v[5]).toLowerCase(), String(v[6]).toLowerCase(), String(v[10]).toLowerCase()]).join(' | ').indexOf(q) >= 0);
       if (!hit) continue;
     }
-    out.push({ at: v[0] instanceof Date ? v[0].toISOString() : String(v[0]), id: v[1], tag: str_(v[2]), order: str_(v[3]), tracking: str_(v[4]), client: v[5], product: v[6], qty: v[7],
+    out.push({ at: v[0] instanceof Date ? v[0].toISOString() : String(v[0]), id: v[1], tracking: str_(v[2]), carrier: str_(v[3]), ref: str_(v[4]), client: v[5], product: v[6], qty: v[7],
                result: v[8], checklist: v[9], tagger: v[10], signed: v[11] === 'Yes', account: v[12], files: v[13], folder: v[14], url: v[15], notes: str_(v[16]) });
   }
   return { ok: true, rows: out, total: vals.length };

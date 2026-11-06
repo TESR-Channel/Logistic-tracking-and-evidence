@@ -1,7 +1,7 @@
 # TESR Logistics — Fulfillment QC & Evidence Record
 
 เว็บแอปบันทึกการตรวจสินค้า (QC) ของบริการ Fulfillment — TESR Logistics
-สแกนเลข Tagging / Order / Tracking ด้วยบาร์โค้ด → ติ๊ก QC Checklist → ถ่ายรูป/วิดีโอหลักฐาน → เซ็นยืนยัน → บันทึกลง Google Drive (1 Record = 1 โฟลเดอร์)
+สแกน **เลข Tracking ที่ลูกค้าส่งมา** (เลขหลักของ record) ด้วยบาร์โค้ด → ติ๊ก QC Checklist → ถ่ายรูป/วิดีโอหลักฐาน → เซ็นยืนยัน → บันทึกลง Google Drive (1 Record = 1 โฟลเดอร์)
 
 **Live:** https://tesr-channel.github.io/Logistic-tracking-and-evidence/
 
@@ -10,13 +10,13 @@
 ```
 Logistic-tracking-and-evidence/            ← root (17wFTaIpnOWenaLl3YrI-qTqqUTU7bKY9)
 ├── <Client>/                              ← ถ้าระบุลูกค้า (แชร์ลิงก์โฟลเดอร์นี้ให้ลูกค้ารายนั้นได้)
-│   └── TG0001_โอ๊ต_06-11-2026/
-│       ├── 00_QC_Summary_TG0001.png       ← ใบสรุป QC (โลโก้ TESR, ผล PASS/FAIL, checklist, ลายเซ็น)
-│       ├── 01_Signature_โอ๊ต.png
+│   └── WB550882001TH_ปุระชัย เมฆสุข_06-11-2026/
+│       ├── 00_QC_Summary_WB550882001TH.png       ← ใบสรุป QC (โลโก้ TESR, ผล PASS/FAIL, checklist, ลายเซ็น)
+│       ├── 01_Signature_ปุระชัย เมฆสุข.png
 │       ├── 02 สินค้า - photo_….jpg
 │       ├── 03 วิดีโอ QC - video_….mp4
-│       └── QC_Record_TG0001.txt
-└── TG0002_พี_06-11-2026/                  ← ไม่ระบุลูกค้า = อยู่ใต้ root
+│       └── QC_Record_WB550882001TH.txt
+└── TH0112233445566_สุริยา ดีคง_06-11-2026/                  ← ไม่ระบุลูกค้า = อยู่ใต้ root
 ```
 
 ทุก record ถูก log ลง Google Sheet **"TESR Logistics QC Log"** (สร้างอัตโนมัติใน My Drive ของบัญชีที่ Deploy — ไม่อยู่ในโฟลเดอร์ public) ใช้สำหรับหน้า Tracking / ค้นหา
@@ -67,8 +67,8 @@ Logistic-tracking-and-evidence/            ← root (17wFTaIpnOWenaLl3YrI-qTqqUT
 ## การสแกน
 
 - **กล้อง**: มือถือ / iPad / โน้ตบุ๊ก / PC ที่มีกล้อง — 1D (Code128, EAN, Code39 ฯลฯ) และ QR · มีปุ่มไฟฉาย (ถ้ากล้องรองรับ) และ "สแกนจากรูป"
-- **เครื่องยิงบาร์โค้ด USB / Bluetooth**: ยิงได้ทันที — ช่องที่โฟกัสอยู่จะรับค่าแล้วกระโดดไปช่องถัดไป ถ้าไม่ได้คลิกช่องไหน ระบบจะเติมลงช่องว่างช่องแรก (Tag → Order → Tracking)
-- สแกน Tag แล้วระบบเช็กว่า Tag นี้เคยบันทึกแล้วหรือยัง
+- **เครื่องยิงบาร์โค้ด USB / Bluetooth**: ยิงได้ทันที — ช่องที่โฟกัสอยู่จะรับค่าแล้วกระโดดไปช่องถัดไป ถ้าไม่ได้คลิกช่องไหน ระบบจะเติมลงช่อง Tracking (ถ้า Tracking มีแล้ว จะเติมช่องเลขอ้างอิง)
+- สแกน Tracking แล้วระบบเช็กว่าเคยบันทึก QC แล้วหรือยัง · เลข EMS/ไปรษณีย์ไทยตรวจ check digit อัตโนมัติ · บอกขนส่ง (EMS, Kerry, Flash, J&T, Shopee, Lazada)
 
 ## รองรับทุกอุปกรณ์
 
