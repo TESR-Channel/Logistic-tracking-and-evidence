@@ -1,5 +1,5 @@
 /* TESR Logistics QC — service worker: network-first (always newest from GitHub Pages), cache only as offline fallback */
-const CACHE = 'tesr-qc-v1.1';
+const CACHE = 'tesr-qc-v1.2';
 const SHELL = ['./', 'index.html', 'tesr-logo.png', 'manifest.json', 'icon-192.png', 'vendor/zxing-browser.min.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

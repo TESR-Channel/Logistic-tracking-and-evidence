@@ -272,9 +272,9 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
 .modal .body{padding:16px 18px}
 .stage{position:relative;background:#000;aspect-ratio:4/3;max-height:62vh;display:grid;place-items:center;overflow:hidden}
 .stage video{width:100%;height:100%;object-fit:cover;display:block}
-.aim{position:absolute;inset:18% 10%;border:2px solid rgba(255,255,255,.85);border-radius:12px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
+.aim{position:absolute;inset:29% 4%;border:2px solid rgba(255,255,255,.85);border-radius:12px;box-shadow:0 0 0 999px rgba(0,0,0,.35);pointer-events:none}
 .aim::after{content:"";position:absolute;left:6%;right:6%;top:50%;height:2px;background:var(--crimson-3);box-shadow:0 0 12px var(--crimson-3);animation:sweep 1.6s ease-in-out infinite}
-@keyframes sweep{0%,100%{transform:translateY(-34px)}50%{transform:translateY(34px)}}
+@keyframes sweep{0%,100%{transform:translateY(-22px)}50%{transform:translateY(22px)}}
 .stage .msg{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;font-size:13px;text-align:center}
 .cam-err{position:absolute;inset:0;display:none;place-items:center;color:#fff;padding:24px;text-align:center;font-size:14px;line-height:1.6;background:#000}
 .cam-err.on{display:grid}
@@ -449,6 +449,7 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
           <div class="field">
             <label for="fTracking">Tracking No. <span>(เลขพัสดุ — ถ้ามี)</span></label>
             <div class="scanrow"><input class="input code" id="fTracking" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="สแกนเลขพัสดุ"><button type="button" class="scanbtn" data-scan="fTracking"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
+            <div class="help" id="trkHint"></div>
           </div>
         </div>
         <div class="field">
@@ -605,7 +606,7 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
       <div class="card"><div class="card-h"><h3>เครื่องนี้</h3></div><div class="card-b">
         <div class="field"><label>ธีม</label><div class="chips" id="themeChips"><button type="button" data-t="light">☀︎ Light</button><button type="button" data-t="dark">☾ Dark</button></div></div>
         <div class="field"><label for="sTagger">ผู้แท็กประจำเครื่อง <span>(เลือกให้อัตโนมัติทุกครั้ง)</span></label><select class="input" id="sTagger"></select></div>
-        <div class="field"><label for="sMsg">ข้อความส่งลูกค้า</label><textarea class="input" id="sMsg" style="min-height:150px"></textarea><div class="help">ตัวแปร: {client} {tag} {order} {tracking} {result} {drive}</div></div>
+        <div class="field"><label for="sMsg">ข้อความส่งลูกค้า</label><textarea class="input" id="sMsg" style="min-height:150px"></textarea><div class="help">ตัวแปร: {client} {tag} {order} {tracking} {tracklink} {result} {drive}</div></div>
         <button class="btn btn-primary" id="sSave">บันทึก</button>
       </div></div>
       <div class="card"><div class="card-h"><h3>การเชื่อมต่อ</h3></div><div class="card-b">
@@ -630,7 +631,7 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
 <!-- scanner -->
 <div class="modal" id="scanModal"><div class="box">
   <header><h3 id="scanTitle">Scan barcode</h3><div style="display:flex;gap:8px;align-items:center"><select class="input" id="scanDev" style="padding:6px 30px 6px 10px;font-size:13px;max-width:200px"></select><button class="iconbtn" id="scanClose"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></header>
-  <div class="stage"><video id="scanVideo" autoplay playsinline muted></video><div class="aim"></div><div class="msg" id="scanMsg">เล็งบาร์โค้ด / QR ให้อยู่ในกรอบ</div><div class="cam-err" id="scanErr"></div></div>
+  <div class="stage"><video id="scanVideo" autoplay playsinline muted></video><div class="aim"></div><div class="msg" id="scanMsg">วางบาร์โค้ดแนวนอนให้อยู่ในกรอบ — ห่างประมาณ 15–25 ซม.</div><div class="cam-err" id="scanErr"></div></div>
   <div class="ctl">
     <button class="btn btn-ghost btn-sm" id="scanTorch" hidden><svg viewBox="0 0 24 24"><path d="M9 2h6l-1 7h4l-8 13 1-9H7z"/></svg>ไฟฉาย</button>
     <button class="btn btn-ghost btn-sm" id="scanImgBtn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>สแกนจากรูป</button>
@@ -660,7 +661,7 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.1';
+const APP_VERSION = 'v1.2';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = '';
 
@@ -685,7 +686,7 @@ const loadScript = src => new Promise((res,rej)=>{ const s=document.createElemen
 const ICON_SCAN='<svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>';
 const SUN='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const MOON='<svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
-const DEFAULT_MSG='เรียนลูกค้า {client}\nTESR Logistics ตรวจสอบคุณภาพ (QC) สินค้าเรียบร้อยแล้ว\nTag: {tag}\nOrder: {order}\nผลการตรวจ: {result}\nรูปและวิดีโอหลักฐาน: {drive}\n\nขอบคุณที่ใช้บริการ TESR Logistics\nTESR Co., Ltd. · 090-465-6519';
+const DEFAULT_MSG='เรียนลูกค้า {client}\nTESR Logistics ตรวจสอบคุณภาพ (QC) สินค้าเรียบร้อยแล้ว\nTag: {tag}\nOrder: {order}\nผลการตรวจ: {result}\nติดตามพัสดุ: {tracklink}\nรูปและวิดีโอหลักฐาน: {drive}\n\nขอบคุณที่ใช้บริการ TESR Logistics\nTESR Co., Ltd. · 090-465-6519';
 
 /* ── State ── */
 let session = LS.get('session', null);      // {token,email,role,config,demo}
@@ -863,6 +864,10 @@ async function checkDup(v){
   }catch(e){}
 }
 
+$('#fTracking').addEventListener('input',()=>{ const v=cleanCode($('#fTracking').value).toUpperCase(), c=carrierOf(v), h=$('#trkHint');
+  if(!v){ h.textContent=''; return; }
+  if(/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(v) && !s10ok(v)){ h.innerHTML='<span style="color:var(--bad)">⚠ เลขพัสดุไปรษณีย์ไม่ถูกต้อง (check digit ไม่ตรง) — สแกน/พิมพ์ใหม่</span>'; return; }
+  h.innerHTML=c?`<span style="color:var(--ok)">✓ ${esc(c)}</span>${s10ok(v)?` · <a class="linkbtn" target="_blank" rel="noopener" href="https://track.thailandpost.co.th/?trackNumber=${encodeURIComponent(v)}">ติดตามพัสดุ</a>`:''}`:''; });
 /* code fields: Enter (hand scanner) → next field */
 const CODE_ORDER=['fTag','fOrder','fTracking','fClient'];
 document.addEventListener('keydown',e=>{
@@ -879,7 +884,7 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){ if(wedge.buf.length>=3){ e.preventDefault(); const code=wedge.buf; wedge.buf='';
       if($('#view-track').classList.contains('active')){ $('#tQ').value=code; runSearch(); return; }
       if(!$('#view-new').classList.contains('active')) show('new');
-      const tgt=['fTag','fOrder','fTracking'].find(id=>!$('#'+id).value.trim())||'fTracking'; setCode(tgt,code); }
+      const tgt=s10ok(code.toUpperCase())?'fTracking':(['fTag','fOrder','fTracking'].find(id=>!$('#'+id).value.trim())||'fTracking'); setCode(tgt,tgt==='fTracking'?code.toUpperCase():code); }
     return; }
   if(e.key.length===1) wedge.buf+=e.key;
 });
@@ -890,7 +895,7 @@ const scan={stream:null,target:null,raf:0,det:null,zx:null,busy:false,last:0,can
 const LABELS={fTag:'Scan Tagging No.',fOrder:'Scan Order No.',fTracking:'Scan Tracking No.',tQ:'Scan เพื่อค้นหา'};
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-scan]'); if(b) openScanner(b.dataset.scan); });
 async function openScanner(target){
-  scan.target=target; $('#scanTitle').textContent=LABELS[target]||'Scan'; $('#scanModal').classList.add('open'); $('#scanErr').classList.remove('on'); $('#scanMsg').textContent='เล็งบาร์โค้ด / QR ให้อยู่ในกรอบ';
+  scan.target=target; $('#scanTitle').textContent=LABELS[target]||'Scan'; $('#scanModal').classList.add('open'); $('#scanErr').classList.remove('on'); $('#scanMsg').textContent='วางบาร์โค้ดแนวนอนให้อยู่ในกรอบ — ห่างประมาณ 15–25 ซม.'; scan.lastRead=''; scan.n=0;
   try{ await ensureDecoder(); }catch(e){ $('#scanErr').textContent='โหลดตัวอ่านบาร์โค้ดไม่ได้: '+e.message; $('#scanErr').classList.add('on'); return; }
   if(!navigator.mediaDevices?.getUserMedia){ $('#scanErr').textContent='เบราว์เซอร์นี้เปิดกล้องไม่ได้ — กด "สแกนจากรูป" แทน'; $('#scanErr').classList.add('on'); return; }
   await startScanCam(LS.get('scanDev','')||undefined);
@@ -899,7 +904,7 @@ async function ensureDecoder(){
   if(scan.det||scan.zx) return;
   if('BarcodeDetector' in window){ try{ const fm=await BarcodeDetector.getSupportedFormats(); if(fm && fm.length){ scan.det=new BarcodeDetector({formats:fm}); $('#scanEng').textContent='Native detector'; return; } }catch(e){} }
   if(!window.ZXingBrowser) await loadScript('vendor/zxing-browser.min.js');
-  scan.zx=new ZXingBrowser.BrowserMultiFormatReader(); $('#scanEng').textContent='ZXing';
+  scan.zx=new ZXingBrowser.BrowserMultiFormatReader(new Map([[3,true]])); $('#scanEng').textContent='ZXing';   // 3 = TRY_HARDER
 }
 async function startScanCam(deviceId){
   stopScanCam(true);
@@ -918,24 +923,50 @@ async function startScanCam(deviceId){
 }
 function loop(){
   scan.raf=requestAnimationFrame(loop);
-  const now=performance.now(); if(scan.busy||now-scan.last<140) return; scan.last=now;
+  const now=performance.now(); if(scan.busy||now-scan.last<110) return; scan.last=now;
   const v=$('#scanVideo'); if(!v.videoWidth) return;
-  scan.busy=true; decodeFrom(v).then(t=>{ if(t) onScanned(t); }).finally(()=>scan.busy=false);
+  scan.busy=true; scan.n=(scan.n||0)+1;
+  decodeFrom(v, scan.n%3!==0).then(t=>{ if(t) confirmScan(t); }).finally(()=>scan.busy=false);   // 2 of 3 frames: sharp center band, 1 of 3: whole frame
 }
-async function decodeFrom(src){
+/* 1D barcodes (EMS/Kerry/Flash labels) read best at full resolution in a wide, short strip around the aim line */
+async function decodeFrom(src, band){
   try{
     if(scan.det){ const r=await scan.det.detect(src); return r[0]?.rawValue||''; }
     const w=src.videoWidth||src.naturalWidth, h=src.videoHeight||src.naturalHeight; if(!w) return '';
-    const c=scan.canvas||(scan.canvas=document.createElement('canvas')); const k=Math.min(1,1280/Math.max(w,h));
-    c.width=Math.round(w*k); c.height=Math.round(h*k); c.getContext('2d',{willReadFrequently:true}).drawImage(src,0,0,c.width,c.height);
+    const c=scan.canvas||(scan.canvas=document.createElement('canvas')), x=c.getContext('2d',{willReadFrequently:true});
+    if(band){ const bw=w*0.92, bh=h*0.42, k=Math.min(1,1920/bw); c.width=Math.round(bw*k); c.height=Math.round(bh*k); x.drawImage(src,(w-bw)/2,(h-bh)/2,bw,bh,0,0,c.width,c.height); }
+    else { const k=Math.min(1,1600/Math.max(w,h)); c.width=Math.round(w*k); c.height=Math.round(h*k); x.drawImage(src,0,0,c.width,c.height); }
     return scan.zx.decodeFromCanvas(c).getText();
   }catch(e){ return ''; }
+}
+/* Thailand Post / EMS S10 number (e.g. WB550882001TH) with check digit */
+function s10ok(v){ const m=/^([A-Z]{2})(\d{8})(\d)([A-Z]{2})$/.exec(v); if(!m) return false; const W=[8,6,4,2,3,5,9,7]; let sum=0; for(let i=0;i<8;i++) sum+=+m[2][i]*W[i]; let c=11-sum%11; if(c===10) c=0; if(c===11) c=5; return c===+m[3]; }
+function carrierOf(v){
+  v=String(v||'').toUpperCase();
+  if(s10ok(v)) return v.endsWith('TH')?(v[0]==='E'||v.startsWith('WB')?'EMS · ไปรษณีย์ไทย':'ไปรษณีย์ไทย'):'Postal (S10) · '+v.slice(-2);
+  if(/^(KER|KEX|KBK|KHH|KHK)\w{6,}$/.test(v)) return 'Kerry Express';
+  if(/^TH\d{10,14}[A-Z]?$/.test(v)) return 'Flash Express';
+  if(/^(SPXTH|TH\d{12}[A-Z]$)/.test(v)) return 'Shopee Express';
+  if(/^(LEXPU|LXAD|LEX)\w+/.test(v)) return 'Lazada Express';
+  if(/^\d{12}$/.test(v)) return 'J&T Express?';
+  if(/^(NJV|NVTH)\w+/.test(v)) return 'Ninja Van';
+  if(/^\d{10}$/.test(v)) return 'DHL?';
+  return '';
+}
+/* accept a read when it passes a checksum, or when the same value is seen twice (stops 1D misreads) */
+function confirmScan(t){
+  const v=cleanCode(t), now=performance.now();
+  if(s10ok(v.toUpperCase()) || /^https?:|^\{/.test(v) || (scan.lastRead===v && now-scan.lastAt<2000)) return onScanned(v);
+  scan.lastRead=v; scan.lastAt=now; $('#scanMsg').textContent='อ่านได้ '+v+' — ถือนิ่งอีกนิด…';
 }
 function beep(){ try{ navigator.vibrate?.(80); const a=new (window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(), g=a.createGain(); o.frequency.value=1650; g.gain.value=.08; o.connect(g); g.connect(a.destination); o.start(); setTimeout(()=>{o.stop();a.close();},110); }catch(e){} }
 function onScanned(text){
   const v=cleanCode(text); if(!v || !$('#scanModal').classList.contains('open')) return; beep(); const tgt=scan.target; closeScanner();
   if(tgt==='tQ'){ $('#tQ').value=v; runSearch(); toast('สแกนแล้ว: '+v); return; }
-  setCode(tgt,v); const i=CODE_ORDER.indexOf(tgt); const nx=CODE_ORDER[i+1]; if(nx && nx!=='fClient' && !$('#'+nx).value) setTimeout(()=>$('#'+nx).focus(),100);
+  // EMS / Thailand Post number scanned into Tag or Order → it belongs in Tracking
+  if((tgt==='fTag'||tgt==='fOrder') && s10ok(v.toUpperCase()) && cleanCode($('#fTracking').value).toUpperCase()===v.toUpperCase()){ toast('เลขพัสดุนี้อยู่ในช่อง Tracking แล้ว'); return; }
+  if((tgt==='fTag'||tgt==='fOrder') && s10ok(v.toUpperCase()) && !$('#fTracking').value.trim()){ setCode('fTracking',v.toUpperCase()); toast('เลขพัสดุ '+carrierOf(v)+' → ช่อง Tracking'); return; }
+  setCode(tgt, tgt==='fTracking'&&s10ok(v.toUpperCase())?v.toUpperCase():v); const i=CODE_ORDER.indexOf(tgt); const nx=CODE_ORDER[i+1]; if(nx && nx!=='fClient' && !$('#'+nx).value) setTimeout(()=>$('#'+nx).focus(),100);
 }
 function stopScanCam(keep){ cancelAnimationFrame(scan.raf); if(scan.stream){ scan.stream.getTracks().forEach(t=>t.stop()); scan.stream=null; } $('#scanVideo').srcObject=null; }
 function closeScanner(){ stopScanCam(); $('#scanModal').classList.remove('open'); }
@@ -1152,7 +1183,7 @@ $('#btnSubmit').onclick=async()=>{
     if(!err.auth){ eb.style.display='block'; eb.innerHTML='<b>บันทึกไม่สำเร็จ:</b> '+esc(err.message)+'<br>กดบันทึกอีกครั้งได้เลย — ระบบจะอัปโหลดต่อจากไฟล์ที่ค้าง ไม่สร้างโฟลเดอร์ซ้ำ'; }
   }finally{ uploading=false; keepAwake(false); btn.disabled=false; lbl('บันทึก QC & อัปโหลด'); syncBar(); }
 };
-const fillMsg=r=>(LS.get('msg',DEFAULT_MSG)).replace(/\{(\w+)\}/g,(_,k)=>({client:r.client||'',tag:r.tag,order:r.order||'-',tracking:r.tracking||'-',result:r.result,drive:r.url})[k]??'');
+const fillMsg=r=>(LS.get('msg',DEFAULT_MSG)).replace(/\{(\w+)\}/g,(_,k)=>({client:r.client||'',tag:r.tag,order:r.order||'-',tracking:r.tracking||'-',tracklink:s10ok(String(r.tracking||'').toUpperCase())?'https://track.thailandpost.co.th/?trackNumber='+encodeURIComponent(String(r.tracking).toUpperCase()):(r.tracking||'-'),result:r.result,drive:r.url})[k]??'');
 $('#btnCopy').onclick=()=>copy($('#doneLink').value,'คัดลอกลิงก์แล้ว');
 $('#btnMsg').onclick=()=>{ if(lastRecord) copy(fillMsg(lastRecord),'คัดลอกข้อความลูกค้าแล้ว'); };
 function resetForm(silent){
