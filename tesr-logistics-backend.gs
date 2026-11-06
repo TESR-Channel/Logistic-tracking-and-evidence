@@ -6,7 +6,7 @@
  *
  * Login 2 แบบ (ตรวจที่ฝั่ง server ทุกครั้ง):
  *   • Google Sign-In  — ส่ง ID token มาตรวจกับ Google (ต้องตั้ง Google Client ID ในหน้า Admin)
- *   • อีเมล + รหัสผ่านของแอป — เก็บเป็น salted hash ใน Script Properties (ไม่ใช่รหัส Gmail)
+ *   • อีเมลพนักงาน + เบอร์โทร (ใช้เป็นรหัสผ่าน) — เก็บเป็น salted hash ใน Script Properties
  * หลัง login ได้ session token (HMAC) อายุ CONFIG.SESSION_DAYS วัน — ทุก action ต้องแนบ token
  *
  * actions (POST, JSON, Content-Type: text/plain):
@@ -16,8 +16,8 @@
  *
  * ติดตั้งครั้งแรก (ดู README.md):
  *   1. script.google.com → New project → วางโค้ดนี้ทั้งไฟล์ → Save
- *   2. ใส่รหัสผ่าน admin ที่ SETUP_ADMIN_PASSWORD ด้านล่าง → เลือกฟังก์ชัน setup → Run → Allow
- *      (เสร็จแล้วลบรหัสออกจากบรรทัดนั้นได้เลย — ระบบเก็บเป็น hash แล้ว)
+ *   2. ใส่เบอร์โทร admin ที่ SETUP_ADMIN_PHONE ด้านล่าง → เลือกฟังก์ชัน setup → Run → Allow
+ *      (เสร็จแล้วลบเบอร์ออกจากบรรทัดนั้นได้เลย — ระบบเก็บเป็น hash แล้ว)
  *   3. Deploy → New deployment → Web app · Execute as: Me · Who has access: Anyone → Deploy → คัดลอก URL /exec
  *   อัปเดตโค้ดครั้งถัดไป: Deploy → Manage deployments → ✎ → Version: New version → Deploy (URL เดิม)
  */
@@ -45,8 +45,8 @@ const CONFIG = {
   },
 };
 
-/** ใส่รหัสผ่าน admin ตรงนี้ แล้ว Run setup() หนึ่งครั้ง — จากนั้นลบออกได้ (ห้าม commit รหัสลง GitHub) */
-const SETUP_ADMIN_PASSWORD = '';
+/** ใส่เบอร์โทร admin (ใช้เป็นรหัสผ่าน) แล้ว Run setup() หนึ่งครั้ง — จากนั้นลบออกได้ (ห้าม commit ลง GitHub) */
+const SETUP_ADMIN_PHONE = '';
 
 const P = PropertiesService.getScriptProperties();
 
@@ -56,9 +56,9 @@ function setup() {
   UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/about?fields=user', { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true });
   if (!P.getProperty('SECRET')) P.setProperty('SECRET', Utilities.getUuid() + Utilities.getUuid());
   if (!P.getProperty('APP_CONFIG')) P.setProperty('APP_CONFIG', JSON.stringify(CONFIG.DEFAULTS));
-  if (SETUP_ADMIN_PASSWORD) {
-    setPw_(CONFIG.DEFAULTS.adminEmails[0], SETUP_ADMIN_PASSWORD);
-    Logger.log('ตั้งรหัสผ่าน admin แล้ว — ลบรหัสออกจาก SETUP_ADMIN_PASSWORD ได้เลย');
+  if (SETUP_ADMIN_PHONE) {
+    setPw_(CONFIG.DEFAULTS.adminEmails[0], phone_(SETUP_ADMIN_PHONE));
+    Logger.log('ตั้งเบอร์โทร admin แล้ว — ลบเบอร์ออกจาก SETUP_ADMIN_PHONE ได้เลย');
   }
   getSheet_();
   Logger.log('setup OK · root = ' + DriveApp.getFolderById(CONFIG.ROOT_FOLDER_ID).getName());
@@ -175,10 +175,10 @@ function login_(b) {
   } else {
     email = String(b.email || '').trim().toLowerCase();
     const cache = CacheService.getScriptCache(), k = 'fail_' + email, fails = Number(cache.get(k) || 0);
-    if (fails >= 5) throw new Error('ใส่รหัสผิดหลายครั้ง — รอ 15 นาทีแล้วลองใหม่ หรือใช้ Sign in with Google');
-    if (!roleOf_(email, c) || !checkPw_(email, String(b.password || ''))) {
+    if (fails >= 5) throw new Error('ใส่เบอร์ผิดหลายครั้ง — รอ 15 นาทีแล้วลองใหม่ หรือใช้ Sign in with Google');
+    if (!roleOf_(email, c) || !checkPw_(email, phone_(b.password))) {
       cache.put(k, String(fails + 1), 900);
-      throw new Error('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+      throw new Error('อีเมลหรือเบอร์โทรไม่ถูกต้อง');
     }
     cache.remove(k);
   }
@@ -206,9 +206,9 @@ function auth_(b, needAdmin) {
 }
 function me_(s) { return { ok: true, email: s.email, role: s.role, config: publicCfg_(s.cfg, s.role) }; }
 function setPassword_(b, s) {
-  const email = String(b.email || '').toLowerCase(), pw = String(b.password || '');
+  const email = String(b.email || '').toLowerCase(), pw = phone_(b.password);
   if (!roleOf_(email, s.cfg)) throw new Error('อีเมลนี้ไม่อยู่ในรายชื่อ Admin / Staff');
-  if (pw.length < 8) throw new Error('รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร');
+  if (!/^\d{9,12}$/.test(pw)) throw new Error('เบอร์โทรไม่ถูกต้อง — ใส่ตัวเลข 9–10 หลัก เช่น 0812345678');
   setPw_(email, pw);
   return { ok: true };
 }
@@ -357,6 +357,8 @@ function folderUnderRoot_(id) {
   throw new Error('โฟลเดอร์ปลายทางไม่ได้อยู่ใต้ root ของระบบ');
 }
 function getOrCreateFolder_(parent, name) { const it = parent.getFoldersByName(name); return it.hasNext() ? it.next() : parent.createFolder(name); }
+/** เบอร์โทร → ตัวเลขล้วน (090-465-6519, +66 90 465 6519 → 0904656519) */
+function phone_(s) { let d = String(s || '').replace(/\D/g, ''); if (/^66\d{8,9}$/.test(d)) d = '0' + d.slice(2); return d; }
 function cleanCode_(s) { return String(s || '').replace(/[\u0000-\u001F]/g, '').trim().slice(0, 80); }
 function safeName_(s) { return String(s).replace(/[\\\/:*?"<>|\u0000-\u001F]/g, '-').trim().slice(0, 120); }
 function str_(v) { return String(v == null ? '' : v).replace(/^'/, ''); }

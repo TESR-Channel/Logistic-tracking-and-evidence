@@ -324,12 +324,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
     <div class="lerr" id="lErr" hidden></div>
     <div id="gWrap" hidden>
       <div class="gbtn" id="gBtn"></div>
-      <div class="or">หรือใช้อีเมล + รหัสผ่านของระบบ</div>
+      <div class="or">หรือใช้อีเมลพนักงาน + เบอร์โทร</div>
     </div>
     <form id="lForm" autocomplete="on">
       <div class="field"><label for="lEmail">อีเมล</label><input class="input" id="lEmail" type="email" list="lEmails" autocomplete="username" placeholder="tesrshop@gmail.com" required>
         <datalist id="lEmails"><option value="tesrshop@gmail.com"><option value="ceo.anoney.potter@gmail.com"></datalist></div>
-      <div class="field"><label for="lPass">รหัสผ่าน <span style="color:#8A8882">(รหัสของระบบนี้ — ไม่ใช่รหัส Gmail)</span></label><input class="input" id="lPass" type="password" autocomplete="current-password" required></div>
+      <div class="field"><label for="lPass">เบอร์โทรศัพท์ <span style="color:#8A8882">(ใช้เป็นรหัสผ่าน)</span></label><input class="input" id="lPass" type="password" inputmode="tel" autocomplete="current-password" placeholder="08x-xxx-xxxx" required></div>
       <button class="btn btn-primary btn-block" id="lBtn" type="submit"><svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>เข้าสู่ระบบ</button>
     </form>
     <details id="epDetails">
@@ -528,13 +528,13 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
         <div class="field"><label for="aGcid">Google Sign-In Client ID <span>— เปิดปุ่ม "Sign in with Google"</span></label><input class="input" id="aGcid" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
         <button class="btn btn-primary" id="aSave">บันทึกการตั้งค่า</button>
       </div></div>
-      <div class="card"><div class="card-h"><h3>รหัสผ่านเข้าระบบ</h3></div><div class="card-b">
-        <p class="sm" style="margin-bottom:12px">ตั้งรหัสผ่านของระบบนี้ให้แต่ละบัญชี (แยกจากรหัส Gmail) — สถานะ: <span id="aPwSt"></span></p>
+      <div class="card"><div class="card-h"><h3>เบอร์โทรเข้าระบบ</h3></div><div class="card-b">
+        <p class="sm" style="margin-bottom:12px">พนักงานเข้าระบบด้วยอีเมล + เบอร์โทรของตัวเอง (เพิ่มอีเมลที่ช่อง "อีเมลพนักงาน" ก่อน แล้วตั้งเบอร์ที่นี่) — สถานะ: <span id="aPwSt"></span></p>
         <div class="grid2">
           <div class="field"><label for="aPwEmail">บัญชี</label><select class="input" id="aPwEmail"></select></div>
-          <div class="field"><label for="aPw">รหัสผ่านใหม่ <span>(≥ 8 ตัว)</span></label><input class="input" id="aPw" type="password" autocomplete="new-password"></div>
+          <div class="field"><label for="aPw">เบอร์โทร <span>(ใช้เป็นรหัสผ่าน)</span></label><input class="input" id="aPw" type="tel" inputmode="tel" autocomplete="off" placeholder="08x-xxx-xxxx"></div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark" id="aPwSet">ตั้งรหัสผ่าน</button><button class="btn btn-ghost" id="aLogoutAll">ออกจากระบบทุกเครื่อง</button></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-dark" id="aPwSet">บันทึกเบอร์โทร</button><button class="btn btn-ghost" id="aLogoutAll">ออกจากระบบทุกเครื่อง</button></div>
       </div></div>
       <div class="card"><div class="card-h"><h3>ข้อมูลระบบ</h3></div><div class="card-b">
         <div class="kv"><span class="k">Drive root</span><span class="v"><a id="aRoot" target="_blank" rel="noopener" class="linkbtn">Logistic-tracking-and-evidence</a></span></div>
@@ -1157,7 +1157,7 @@ async function loadAdmin(){
   $('#aAdmins').value=(cfg.adminEmails||[]).join('\n'); $('#aStaffEm').value=(cfg.staffEmails||[]).join('\n'); $('#aGcid').value=cfg.googleClientId||'';
   const ems=[...(cfg.adminEmails||[]),...(cfg.staffEmails||[])];
   $('#aPwEmail').innerHTML=ems.map(m=>`<option>${esc(m)}</option>`).join('');
-  $('#aPwSt').innerHTML=ems.map(m=>`${esc(m)} ${cfg.passwordSet?.[m]?'<b style="color:var(--ok)">✓ ตั้งแล้ว</b>':'<b style="color:var(--warn)">ยังไม่ตั้ง</b>'}`).join(' · ');
+  $('#aPwSt').innerHTML=ems.map(m=>`${esc(m)} ${cfg.passwordSet?.[m]?'<b style="color:var(--ok)">✓ ตั้งเบอร์แล้ว</b>':'<b style="color:var(--warn)">ยังไม่ตั้งเบอร์</b>'}`).join(' · ');
   $('#aRoot').href=cfg.rootUrl||'#'; $('#aSheet').href=cfg.logSheetUrl||'#'; $('#aSheet').textContent=cfg.logSheetUrl?'เปิด Sheet':'(สร้างอัตโนมัติเมื่อบันทึกครั้งแรก)';
   $('#aEp').textContent=session.demo?'Demo mode (เก็บในเครื่องนี้)':endpoint();
 }
@@ -1170,9 +1170,9 @@ $('#aSave').onclick=async()=>{
   try{ const j=await api('saveConfig',{config:conf}); cfg=Object.assign({},cfg,j.config); session.config=cfg; LS.set('session',session); LS.set('gcid',cfg.googleClientId||''); applyConfig(); loadAdmin(); toast('บันทึกการตั้งค่าแล้ว — มีผลกับทุกเครื่อง'); }
   catch(e){ if(!e.auth) toast(e.message,4500); }
 };
-$('#aPwSet').onclick=async()=>{ const email=$('#aPwEmail').value, password=$('#aPw').value;
-  if(password.length<8) return toast('รหัสผ่านต้องยาวอย่างน้อย 8 ตัว');
-  try{ await api('setPassword',{email,password}); $('#aPw').value=''; toast('ตั้งรหัสผ่านให้ '+email+' แล้ว'); loadAdmin(); }catch(e){ if(!e.auth) toast(e.message,4000); } };
+$('#aPwSet').onclick=async()=>{ const email=$('#aPwEmail').value, password=$('#aPw').value.replace(/\D/g,'');
+  if(!/^\d{9,12}$/.test(password)) return toast('ใส่เบอร์โทร 9–10 หลัก เช่น 0812345678');
+  try{ await api('setPassword',{email,password}); $('#aPw').value=''; toast('ตั้งเบอร์โทรให้ '+email+' แล้ว'); loadAdmin(); }catch(e){ if(!e.auth) toast(e.message,4000); } };
 $('#aLogoutAll').onclick=async()=>{ if(!confirm('ให้ทุกเครื่อง (รวมเครื่องนี้) ออกจากระบบ?')) return; try{ await api('logoutAll'); forceLogout('ออกจากระบบทุกเครื่องแล้ว — เข้าสู่ระบบใหม่'); }catch(e){ if(!e.auth) toast(e.message); } };
 
 /* ═══ Settings ═══ */
