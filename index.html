@@ -307,6 +307,56 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
   .hide-m{display:none}
 }
 .mwho{display:none;margin-left:auto;align-items:center;gap:6px}
+/* ── Touch / all-device support ── */
+body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+@media(pointer:coarse){
+  .iconbtn{width:42px;height:42px}.iconbtn svg{width:18px;height:18px}
+  .btn-sm{padding:10px 14px}
+  .fitem .rm{width:30px;height:30px;line-height:30px;font-size:16px;top:-6px;right:-6px}
+  .chk{padding:14px 12px}.chk .bx{width:26px;height:26px}
+  .result label{padding:14px 10px}
+  .chips button{padding:11px 20px}
+  .scanbtn{min-width:52px;justify-content:center}
+  .sig{height:180px}
+}
+.mbar{display:none}
+@media(max-width:1180px){
+  body.on-new .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;gap:10px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
+  body.on-new .main{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .mbar .mi{flex:1;min-width:0;font-size:12px;color:var(--muted);line-height:1.3}
+  .mbar .mi b{display:block;color:var(--text);font-family:var(--display);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mbar .mp{height:3px;background:var(--line);border-radius:2px;margin-top:5px;overflow:hidden}
+  .mbar .mp i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .4s}
+  .mbar .btn{padding:13px 18px;font-size:15px;flex:none}
+}
+@media(max-width:820px){
+  .input,select.input,textarea.input,.lbox .input{font-size:16px}   /* iOS: no auto-zoom on focus */
+  .code{font-size:18px}
+  .sidebar{padding-top:env(safe-area-inset-top)}
+  .toast{bottom:calc(96px + env(safe-area-inset-bottom))}
+  .modal{padding:0;align-items:end}
+  .modal .box{border-radius:16px 16px 0 0;max-height:94vh;padding-bottom:env(safe-area-inset-bottom)}
+  .stage{aspect-ratio:3/4;max-height:58vh}
+  /* tracking table → cards */
+  #tTable thead{display:none}
+  #tTable,#tTable tbody{display:block}
+  #tTable{width:100%;table-layout:fixed}
+  #tTable tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  #tTable td{display:block;padding:0;border:0;min-width:0;overflow-wrap:anywhere}
+  #tTable td:nth-child(2){grid-area:1/1;font-size:17px}
+  #tTable td:nth-child(5){grid-area:1/2;text-align:right}
+  #tTable td:nth-child(3){grid-area:2/1/3/3}
+  #tTable td:nth-child(4){grid-area:3/1/4/3}
+  #tTable td:nth-child(1){grid-area:4/1/5/3;font-size:12px;color:var(--muted)}
+  #tTable td:nth-child(6){font-size:13px}
+  #tTable td:nth-child(7){display:none}
+  #tTable td:nth-child(6){grid-area:5/1/6/3}
+  #tTable td:nth-child(8){grid-area:6/1/7/3;margin-top:8px}
+  #tTable td:nth-child(8) .actions{justify-content:flex-start;gap:8px}
+  .toolbar{padding:12px}
+  .toolbar .scanrow{max-width:none;flex:1 1 100%}
+}
+
 .mwho button{color:#C9C7C1;padding:8px}
 </style>
 </head>
@@ -327,7 +377,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
       <div class="or">หรือใช้อีเมลพนักงาน + เบอร์โทร</div>
     </div>
     <form id="lForm" autocomplete="on">
-      <div class="field"><label for="lEmail">อีเมล</label><input class="input" id="lEmail" type="email" list="lEmails" autocomplete="username" placeholder="tesrshop@gmail.com" required>
+      <div class="field"><label for="lEmail">อีเมล</label><input class="input" id="lEmail" type="email" autocapitalize="none" autocorrect="off" spellcheck="false" list="lEmails" autocomplete="username" placeholder="tesrshop@gmail.com" required>
         <datalist id="lEmails"><option value="tesrshop@gmail.com"><option value="ceo.anoney.potter@gmail.com"></datalist></div>
       <div class="field"><label for="lPass">เบอร์โทรศัพท์ <span style="color:#8A8882">(ใช้เป็นรหัสผ่าน)</span></label><input class="input" id="lPass" type="password" inputmode="tel" autocomplete="current-password" placeholder="08x-xxx-xxxx" required></div>
       <button class="btn btn-primary btn-block" id="lBtn" type="submit"><svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>เข้าสู่ระบบ</button>
@@ -387,18 +437,18 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
         <div class="sec-h"><span class="n">1</span><h3>Scan & Order Information</h3></div>
         <div class="field">
           <label for="fTag">Tagging No. <span>(เลขแท็ก)</span> <b class="req">*</b></label>
-          <div class="scanrow"><input class="input code" id="fTag" data-code autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="สแกนหรือพิมพ์เลข Tag"><button type="button" class="scanbtn" data-scan="fTag"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg><span class="hide-m">Scan</span></button></div>
+          <div class="scanrow"><input class="input code" id="fTag" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="สแกนหรือพิมพ์เลข Tag"><button type="button" class="scanbtn" data-scan="fTag"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg><span class="hide-m">Scan</span></button></div>
           <div class="help" id="tagHelp">ใช้กล้องสแกนบาร์โค้ด / QR หรือยิงด้วยเครื่องสแกน USB/Bluetooth ได้เลย</div>
           <div class="dup" id="tagDup"></div>
         </div>
         <div class="grid2">
           <div class="field">
             <label for="fOrder">Order No. <span>(เลขออเดอร์)</span> <b class="req" id="orderReq" hidden>*</b></label>
-            <div class="scanrow"><input class="input code" id="fOrder" data-code autocomplete="off" spellcheck="false" placeholder="สแกนเลขออเดอร์"><button type="button" class="scanbtn" data-scan="fOrder"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
+            <div class="scanrow"><input class="input code" id="fOrder" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="สแกนเลขออเดอร์"><button type="button" class="scanbtn" data-scan="fOrder"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
           </div>
           <div class="field">
             <label for="fTracking">Tracking No. <span>(เลขพัสดุ — ถ้ามี)</span></label>
-            <div class="scanrow"><input class="input code" id="fTracking" data-code autocomplete="off" spellcheck="false" placeholder="สแกนเลขพัสดุ"><button type="button" class="scanbtn" data-scan="fTracking"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
+            <div class="scanrow"><input class="input code" id="fTracking" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="สแกนเลขพัสดุ"><button type="button" class="scanbtn" data-scan="fTracking"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
           </div>
         </div>
         <div class="field">
@@ -492,7 +542,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
   <section class="view" id="view-track">
     <div class="card">
       <div class="toolbar">
-        <div class="scanrow"><input class="input" id="tQ" data-code placeholder="ค้นหา Tag / Order / Tracking / ลูกค้า / ผู้แท็ก" autocomplete="off"><button type="button" class="scanbtn" data-scan="tQ"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
+        <div class="scanrow"><input class="input" id="tQ" data-code type="search" enterkeyhint="search" autocorrect="off" autocapitalize="off" placeholder="ค้นหา Tag / Order / Tracking / ลูกค้า / ผู้แท็ก" autocomplete="off"><button type="button" class="scanbtn" data-scan="tQ"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
         <button class="btn btn-primary" id="tGo"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>ค้นหา</button>
         <span class="sm" id="tCount"></span>
         <span style="flex:1"></span>
@@ -574,6 +624,9 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
 </div>
 </div>
 
+<!-- mobile / tablet action bar -->
+<div class="mbar" id="mbar"><div class="mi"><b id="mbTitle">ยังไม่ได้สแกน Tag</b><span id="mbSub">0 ไฟล์</span><div class="mp"><i id="mbProg"></i></div></div><button class="btn btn-primary" id="mbBtn">บันทึก QC</button></div>
+
 <!-- scanner -->
 <div class="modal" id="scanModal"><div class="box">
   <header><h3 id="scanTitle">Scan barcode</h3><div style="display:flex;gap:8px;align-items:center"><select class="input" id="scanDev" style="padding:6px 30px 6px 10px;font-size:13px;max-width:200px"></select><button class="iconbtn" id="scanClose"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div></header>
@@ -607,7 +660,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.0';
+const APP_VERSION = 'v1.1';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = '';
 
@@ -768,6 +821,7 @@ function applyConfig(){
 const TITLES={ new:['New QC Record','สแกน Tag → ตรวจ QC → ถ่ายรูป/วิดีโอหลักฐาน → บันทึกลง Google Drive'], track:['Tracking / ค้นหา','ค้นหาประวัติ QC ด้วยเลข Tag, Order หรือ Tracking — สแกนเพื่อค้นหาได้'], admin:['Admin','ตั้งค่าพนักงาน ลูกค้า Checklist และสิทธิ์การเข้าใช้'], settings:['Settings','ธีม ผู้แท็กประจำเครื่อง และการเชื่อมต่อ'] };
 function show(v){
   if(v==='admin' && session?.role!=='admin') v='new';
+  document.body.classList.toggle('on-new',v==='new');
   $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+v)); $$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   $('#pageTitle').textContent=TITLES[v][0]; $('#pageSub').textContent=TITLES[v][1];
   if(v==='track') runSearch(); if(v==='admin') loadAdmin();
@@ -899,7 +953,7 @@ $('#scanImg').onchange=async e=>{
 /* ═══ Evidence files ═══ */
 const TAGS=['สินค้า','ฉลาก / บาร์โค้ด','ตำหนิ / ความเสียหาย','แพ็คกิ้ง','วิดีโอ QC','เอกสาร','อื่นๆ'];
 const MAXB = () => (cfg?.maxFileMB||100)*1024*1024;
-const BUFFER_MAX = 80*1024*1024;
+const BUFFER_MAX_FN = () => Math.min(Math.max(MAXB(),80*1024*1024),150*1024*1024);   // keep whole file in RAM (iOS deletes camera temp files)
 const guessTag = f => f.type.startsWith('video/')?'วิดีโอ QC':/pdf/i.test(f.type)?'เอกสาร':'';
 (function initDrop(){
   const dz=$('#dropzone'), inp=$('#filePick');
@@ -918,7 +972,7 @@ async function addFiles(list){
     if(!/^(image|video)\//.test(f.type) && !/\.(jpe?g|png|heic|heif|webp|mp4|mov|m4v|webm|pdf)$/i.test(f.name)){ toast(`${f.name}: ไม่รองรับไฟล์ประเภทนี้`); continue; }
     const item={file:f,name:f.name,size:f.size,type:(f.type||'').split(';')[0].trim(),thumb:null,tag:guessTag(f),buf:null};
     files.push(item); renderFiles();
-    if(f.size<=BUFFER_MAX){ try{ item.buf=await readBytes(f); if(item.buf.byteLength!==f.size) item.buf=null; }catch(e){ item.buf=null; } }
+    if(f.size<=BUFFER_MAX_FN()){ try{ item.buf=await readBytes(f); if(item.buf.byteLength!==f.size) item.buf=null; }catch(e){ item.buf=null; } }
     item.thumb=await makeThumb(f); renderFiles();
   }
 }
@@ -1053,7 +1107,7 @@ $('#btnSubmit').onclick=async()=>{
     product:$('#fProduct').value.trim(), qty:$('#fQty').value.trim(), result:result(), tagger:tagger(), signed:sig.has, notes:$('#fNotes').value.trim(),
     checklist:(cfg.checklist||[]).map((item,i)=>({item,ok:!!$(`#checks input[data-i="${i}"]`)?.checked})) };
   const btn=$('#btnSubmit'), lbl=t=>{ btn.querySelector('span').textContent=t; };
-  btn.disabled=true; uploading=true; setStatus('saving','Saving…'); setProgress(3,'กำลังสร้างโฟลเดอร์…');
+  btn.disabled=true; uploading=true; keepAwake(true); setStatus('saving','Saving…'); setProgress(3,'กำลังสร้างโฟลเดอร์…');
   try{
     // plan Drive file names: 00 summary · 01 signature · 02.. evidence
     const cnt={}; let n=0;
@@ -1096,7 +1150,7 @@ $('#btnSubmit').onclick=async()=>{
   }catch(err){
     console.error(err); setStatus('error','Error'); setProgress(null,'');
     if(!err.auth){ eb.style.display='block'; eb.innerHTML='<b>บันทึกไม่สำเร็จ:</b> '+esc(err.message)+'<br>กดบันทึกอีกครั้งได้เลย — ระบบจะอัปโหลดต่อจากไฟล์ที่ค้าง ไม่สร้างโฟลเดอร์ซ้ำ'; }
-  }finally{ uploading=false; btn.disabled=false; lbl('บันทึก QC & อัปโหลด'); }
+  }finally{ uploading=false; keepAwake(false); btn.disabled=false; lbl('บันทึก QC & อัปโหลด'); syncBar(); }
 };
 const fillMsg=r=>(LS.get('msg',DEFAULT_MSG)).replace(/\{(\w+)\}/g,(_,k)=>({client:r.client||'',tag:r.tag,order:r.order||'-',tracking:r.tracking||'-',result:r.result,drive:r.url})[k]??'');
 $('#btnCopy').onclick=()=>copy($('#doneLink').value,'คัดลอกลิงก์แล้ว');
@@ -1182,10 +1236,39 @@ $('#aLogoutAll').onclick=async()=>{ if(!confirm('ให้ทุกเครื�
 $('#sSave').onclick=()=>{ LS.set('defTagger',$('#sTagger').value); LS.set('msg',$('#sMsg').value||DEFAULT_MSG); const ep=$('#sEp').value.trim(); if(ep!==endpoint()) LS.set('endpoint',ep); applyConfig(); toast('บันทึกแล้ว'); };
 $('#sTest').onclick=async()=>{ $('#sTestSt').textContent='กำลังทดสอบ…'; $('#sTestSt').textContent=await testEndpoint($('#sEp').value.trim()); };
 
+
+/* ═══ Mobile / tablet action bar (mirrors the Submit card) ═══ */
+function syncBar(){
+  const tag=cleanCode($('#fTag').value), done=$('#btnSubmit').hidden, mb=$('#mbBtn');
+  $('#mbTitle').textContent = done ? '✓ '+($('#doneId').textContent||'บันทึกแล้ว') : (tag||'ยังไม่ได้สแกน Tag');
+  $('#mbSub').textContent = $('#plabel').textContent || ($('#sumFiles').textContent+' · QC '+($('input[name=result]:checked')?.value||'-'));
+  $('#mbProg').style.width = $('#progress').style.display==='block' ? $('#progress i').style.width : '0';
+  if(done){ mb.className='btn btn-gold'; mb.textContent='ชิ้นถัดไป'; mb.disabled=false; }
+  else { mb.className='btn btn-primary'; mb.disabled=$('#btnSubmit').disabled; mb.textContent=$('#btnSubmit').disabled?'กำลังบันทึก…':'บันทึก QC'; }
+}
+$('#mbBtn').onclick=()=>{ if($('#btnSubmit').hidden) $('#btnNext').click(); else { $('#btnSubmit').click(); if($('#errbox').style.display==='block') $('#errbox').scrollIntoView({behavior:'smooth',block:'center'}); } };
+new MutationObserver(syncBar).observe($('#view-new'),{subtree:true,childList:true,attributes:true,characterData:true,attributeFilter:['disabled','hidden','style','class']});
+$('#formCard').addEventListener('input',syncBar); $('#formCard').addEventListener('change',syncBar);
+
+/* ═══ Keep screen awake while uploading (phones lock → upload stops) ═══ */
+let wakeLock=null;
+async function keepAwake(on){ try{ if(on && 'wakeLock' in navigator){ wakeLock=await navigator.wakeLock.request('screen'); } else if(!on && wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){} }
+document.addEventListener('visibilitychange',()=>{ if(uploading && document.visibilityState==='visible') keepAwake(true); });
+
+/* ═══ Paste screenshots / photos (Ctrl+V / ⌘V) on laptops ═══ */
+document.addEventListener('paste',e=>{
+  if(!$('#view-new').classList.contains('active') || $('#appView').hidden) return;
+  const fs=[...(e.clipboardData?.files||[])]; if(!fs.length) return;
+  e.preventDefault(); addFiles(fs.map((f,i)=>new File([f],'paste_'+stamp()+(i?'_'+i:'')+'.'+((f.type.split('/')[1]||'png').replace('jpeg','jpg')),{type:f.type}))); toast('วางไฟล์แล้ว '+fs.length+' ไฟล์');
+});
+
+/* ═══ Installable app + fast reopen (network-first, never stale) ═══ */
+if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+
 /* ═══ Init ═══ */
 $('#verTag').textContent=APP_VERSION; setTheme(document.documentElement.dataset.theme);
 if(session?.token) startApp(); else showLogin();
-if('serviceWorker' in navigator){ /* no SW: always fresh from GitHub Pages */ }
+syncBar();
 </script>
 </body>
 </html>
