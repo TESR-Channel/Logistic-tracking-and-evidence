@@ -24,7 +24,7 @@
  */
 
 const CONFIG = {
-  VERSION:        'v1.0',
+  VERSION:        'v1.4',
   ROOT_FOLDER_ID: '17wFTaIpnOWenaLl3YrI-qTqqUTU7bKY9', // "Logistic-tracking-and-evidence" (owner ceo.anoney.potter@gmail.com)
   LOG_SHEET_NAME: 'TESR Logistics QC Log',
   // รายชื่อพนักงานอ่านสดจาก "Work tracking log" แท็บ Employees (ระบบลงเวลา) — login = email + phone, active = TRUE
@@ -249,10 +249,10 @@ function setPassword_(b, s) {
 /* ═══ records ═════════════════════════════════════════════════ */
 function create_(b, s) {
   const r = b.record || {};
-  const tag = cleanCode_(r.tracking).toUpperCase();   // Tracking No. = เลขหลักของ record (fulfillment)
+  const tag = cleanCode_(r.tracking || r.tag).toUpperCase();   // Tracking No. = เลขหลักของ record (fulfillment)
   if (!tag) throw new Error('ต้องมีเลข Tracking');
   if (s.cfg.tagPattern && !(new RegExp(s.cfg.tagPattern)).test(tag)) throw new Error('เลข Tracking "' + tag + '" ไม่ตรงรูปแบบที่ Admin กำหนด' + (s.cfg.tagExample ? ' (ตัวอย่าง ' + s.cfg.tagExample + ')' : ''));
-  if (s.cfg.orderRequired && !cleanCode_(r.ref)) throw new Error('ต้องมีเลขอ้างอิง (Order / Ref)');
+  if (s.cfg.orderRequired && !cleanCode_(r.ref || r.order)) throw new Error('ต้องมีเลขอ้างอิง (Order / Ref)');
   if (!r.tagger) throw new Error('ต้องระบุผู้แท็ก');
 
   let root;
@@ -274,7 +274,7 @@ function create_(b, s) {
     '========================================================',
     'Record ID     : ' + id,
     'Tracking No.  : ' + tag + (r.carrier ? '  (' + r.carrier + ')' : ''),
-    'Ref / Order   : ' + (cleanCode_(r.ref) || '-'),
+    'Ref / Order   : ' + (cleanCode_(r.ref || r.order) || '-'),
     'Client        : ' + (r.client || '-'),
     'Product / SKU : ' + (r.product || '-') + (r.qty ? '   ×' + r.qty : ''),
     'QC Result     : ' + (r.result || '-'),
@@ -326,7 +326,7 @@ function chunk_(b) {
 
 function finish_(b, s) {
   const r = b.record || {}, folder = folderUnderRoot_(b.folderId);
-  const row = [new Date(), r.id, cleanCode_(r.tracking).toUpperCase(), r.carrier || '', cleanCode_(r.ref), r.client || '', r.product || '', r.qty || '',
+  const row = [new Date(), r.id, cleanCode_(r.tracking || r.tag).toUpperCase(), r.carrier || '', cleanCode_(r.ref || r.order), r.client || '', r.product || '', r.qty || '',
     r.result || '', (r.checklist || []).map(function (c) { return (c.ok ? '✓ ' : '✗ ') + c.item; }).join('\n'),
     r.tagger || '', r.signed ? 'Yes' : 'No', s.email, b.fileCount || 0, b.folderName || folder.getName(), folder.getUrl(), r.notes || ''];
   const sh = getSheet_();
@@ -365,7 +365,10 @@ function getSheet_() {
     sh.getRange(1, 1, 1, COLS.length).setFontWeight('bold').setBackground('#0A0A0B').setFontColor('#C9A84C');
     sh.getRange('C:E').setNumberFormat('@');
   }
-  return ss.getSheets()[0];
+  const sh = ss.getSheets()[0];
+  const head = sh.getRange(1, 1, 1, COLS.length);
+  if (head.getValues()[0].join('|') !== COLS.join('|')) head.setValues([COLS]);   // อัปเดตหัวตารางจากเวอร์ชันเก่า
+  return sh;
 }
 function nextId_(d) {
   const lock = LockService.getScriptLock(); lock.waitLock(20000);

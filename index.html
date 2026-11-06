@@ -319,6 +319,37 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
   .scanbtn{min-width:52px;justify-content:center}
   .sig{height:180px}
 }
+
+/* ── simple flow ── */
+.done-mark{margin-left:auto;width:24px;height:24px;border-radius:50%;background:var(--ok);color:#fff;font-size:13px;font-weight:700;display:none;place-items:center}
+.sec.ok .done-mark{display:grid}
+.sec.ok .sec-h .n{background:var(--ok)}
+.scanrow.big .input{font-size:22px;padding:14px 14px}
+.scanrow.big .scanbtn{padding:0 22px;font-size:16px;gap:9px;background:var(--crimson);border-color:var(--crimson)}
+.scanrow.big .scanbtn svg{width:24px;height:24px}
+.cam-big{padding:14px 22px;font-size:16px;min-width:150px}
+.cam-big svg{width:20px!important;height:20px!important}
+.dropzone{padding:18px 14px}
+.result b{font-size:21px}
+details.more{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--card-2)}
+details.more summary{cursor:pointer;font-weight:600;list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::before{content:"▸ ";color:var(--muted)}
+details.more[open] summary::before{content:"▾ "}
+details.more[open] summary{margin-bottom:12px}
+details.more-sec{border-top:1px dashed var(--line);margin-top:22px;padding-bottom:22px}
+details.more-sec summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+details.more-sec summary::-webkit-details-marker{display:none}
+details.more-sec summary .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none}
+details.more-sec summary h3{font-family:var(--display);font-size:19px;font-weight:700}
+details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:820px){
+  .scanrow.big .input{font-size:19px}
+  .scanrow.big .scanbtn{padding:0 16px}
+  .cam-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .cam-big{min-width:0;padding:18px 10px}
+  .result label{padding:14px 6px}.result b{font-size:18px}.result span{font-size:11px}
+}
 .mbar{display:none}
 @media(max-width:1180px){
   body.on-new .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;gap:10px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
@@ -433,50 +464,25 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
   <section class="view active" id="view-new">
   <div class="two-col">
     <div class="card" id="formCard">
-      <div class="sec">
-        <div class="sec-h"><span class="n">1</span><h3>Scan Tracking No.</h3></div>
-        <div class="field">
-          <label for="fTrk">Tracking No. <span>(เลขพัสดุที่ลูกค้าส่งมา)</span> <b class="req">*</b></label>
-          <div class="scanrow"><input class="input code" id="fTrk" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="สแกนเลข Tracking"><button type="button" class="scanbtn" data-scan="fTrk"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg><span class="hide-m">Scan</span></button></div>
-          <div class="help" id="trkHint"></div>
-          <div class="help" id="trkHelp">สแกนบาร์โค้ดบนใบปะหน้าด้วยกล้อง หรือยิงด้วยเครื่องสแกน USB/Bluetooth ได้เลย</div>
-          <div class="dup" id="trkDup"></div>
+      <div class="sec" id="sec1">
+        <div class="sec-h"><span class="n">1</span><h3>สแกนเลข Tracking</h3><span class="done-mark" id="ok1">✓</span></div>
+        <div class="scanrow big">
+          <input class="input code" id="fTrk" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="แตะปุ่มสแกน หรือพิมพ์เลข">
+          <button type="button" class="scanbtn" data-scan="fTrk"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg><span>สแกน</span></button>
         </div>
-        <div class="field">
-          <label for="fRef">เลขอ้างอิงเพิ่มเติม <span>(Order / Ref — ถ้ามี)</span></label>
-          <div class="scanrow"><input class="input code" id="fRef" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="next" placeholder="เว้นว่างได้"><button type="button" class="scanbtn" data-scan="fRef"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
-        </div>
-        <div class="field">
-          <label for="fClient">Client <span>(ลูกค้า/ร้านค้าที่ใช้บริการ Fulfillment — ถ้าระบุ จะแยกโฟลเดอร์ตามลูกค้า)</span></label>
-          <input class="input" id="fClient" list="clientList" autocomplete="off" placeholder="เลือกหรือพิมพ์ชื่อลูกค้า (เว้นว่างได้)"><datalist id="clientList"></datalist>
-        </div>
-        <div class="grid3">
-          <div class="field"><label for="fProduct">Product / SKU <span>(สินค้า)</span></label><input class="input" id="fProduct" data-code autocomplete="off" placeholder="ชื่อสินค้า หรือ SKU"></div>
-          <div class="field"><label for="fQty">Qty <span>(จำนวน)</span></label><input class="input" id="fQty" type="number" min="0" inputmode="numeric" placeholder="1"></div>
-        </div>
+        <div class="help" id="trkHint"></div>
+        <div class="help" id="trkHelp" hidden></div>
+        <div class="dup" id="trkDup"></div>
       </div>
 
-      <div class="sec">
-        <div class="sec-h"><span class="n">2</span><h3>QC Checklist</h3></div>
-        <div class="chk-all"><button type="button" class="linkbtn" id="btnChkAll">เลือกทั้งหมด</button></div>
-        <div class="checks" id="checks"></div>
-        <div class="result" id="resultSel">
-          <label class="pass"><input type="radio" name="result" value="PASS"><b>PASS</b><span>ผ่าน</span></label>
-          <label class="cond"><input type="radio" name="result" value="PASS (NOTE)"><b>NOTE</b><span>ผ่าน มีหมายเหตุ</span></label>
-          <label class="fail"><input type="radio" name="result" value="FAIL"><b>FAIL</b><span>ไม่ผ่าน</span></label>
-        </div>
-      </div>
-
-      <div class="sec">
-        <div class="sec-h"><span class="n">3</span><h3>Evidence Photos & Videos</h3></div>
+      <div class="sec" id="sec2">
+        <div class="sec-h"><span class="n">2</span><h3>ถ่ายรูป / วิดีโอหลักฐาน</h3><span class="done-mark" id="ok2">✓</span></div>
         <div class="dropzone" id="dropzone">
-          <svg viewBox="0 0 24 24"><path d="M12 16V8m0 0-4 4m4-4 4 4"/><path d="M20.4 17.5A5 5 0 0 0 18 8h-1.3A8 8 0 1 0 4 15.3"/></svg>
-          <div><b>ลากไฟล์มาวาง</b> หรือ <button type="button" class="linkbtn" id="btnPick">เลือกไฟล์</button></div>
-          <div class="s" id="limitTxt">JPG, PNG, HEIC, MP4, MOV, PDF · สูงสุด 100 MB/ไฟล์ · เลือกหลายไฟล์พร้อมกันได้</div>
           <div class="cam-btns">
-            <button type="button" class="btn btn-dark btn-sm" id="btnPhoto"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>ถ่ายรูป</button>
-            <button type="button" class="btn btn-ghost btn-sm" id="btnVideo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 11 5-3v8l-5-3z"/></svg>อัดวิดีโอ</button>
+            <button type="button" class="btn btn-primary cam-big" id="btnPhoto"><svg viewBox="0 0 24 24"><path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>ถ่ายรูป</button>
+            <button type="button" class="btn btn-dark cam-big" id="btnVideo"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="m16 11 5-3v8l-5-3z"/></svg>อัดวิดีโอ</button>
           </div>
+          <div class="s" style="margin-top:10px">หรือ <button type="button" class="linkbtn" id="btnPick">เลือกจากเครื่อง</button> <span class="hide-m">/ ลากไฟล์มาวาง / Ctrl+V</span> · <span id="limitTxt">สูงสุด 100 MB/ไฟล์</span></div>
           <input type="file" id="filePick" multiple>
           <input type="file" id="camPhoto" accept="image/*" capture="environment">
           <input type="file" id="camVideo" accept="video/*" capture="environment">
@@ -485,14 +491,43 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
         <div class="ftotal" id="ftotal"></div>
       </div>
 
-      <div class="sec">
-        <div class="sec-h"><span class="n">4</span><h3>Inspector · ผู้แท็ก</h3></div>
-        <div class="field"><label>ผู้ตรวจ / ผู้แท็ก <b class="req">*</b></label><div class="chips" id="staffChips"></div></div>
-        <div class="field"><label>ลายเซ็นยืนยัน <span id="signOpt">(ไม่บังคับ)</span></label>
-          <div class="sig" id="sigBox"><canvas id="sigCanvas"></canvas><div class="ph" id="sigPh">เซ็นชื่อที่นี่ด้วยนิ้วหรือเมาส์</div><button type="button" class="clr" id="sigClear">ล้าง</button></div>
+      <div class="sec" id="sec3">
+        <div class="sec-h"><span class="n">3</span><h3>ผลตรวจ QC</h3><span class="done-mark" id="ok3">✓</span></div>
+        <div class="result" id="resultSel">
+          <label class="pass"><input type="radio" name="result" value="PASS"><b>ผ่าน</b><span>PASS</span></label>
+          <label class="cond"><input type="radio" name="result" value="PASS (NOTE)"><b>มีหมายเหตุ</b><span>ผ่าน แต่มีจุดสังเกต</span></label>
+          <label class="fail"><input type="radio" name="result" value="FAIL"><b>ไม่ผ่าน</b><span>FAIL</span></label>
         </div>
-        <div class="field"><label for="fNotes">หมายเหตุ <span>(จะแสดงในไฟล์ QC ที่ลูกค้าเห็น)</span></label><textarea class="input" id="fNotes" maxlength="1000" placeholder="เช่น กล่องนอกบุบเล็กน้อย สินค้าด้านในปกติ"></textarea></div>
+        <details class="more" id="chkWrap">
+          <summary>รายการตรวจ <b id="chkCount">0/0</b> <span class="sm">— กด "ผ่าน" แล้วติ๊กให้ครบอัตโนมัติ แก้ได้</span></summary>
+          <div class="chk-all"><button type="button" class="linkbtn" id="btnChkAll">เลือกทั้งหมด</button></div>
+          <div class="checks" id="checks"></div>
+        </details>
+        <div class="field" id="notesWrap" hidden style="margin-top:12px"><label for="fNotes">หมายเหตุ <span id="notesReq">(ลูกค้าจะเห็นข้อความนี้)</span></label><textarea class="input" id="fNotes" maxlength="1000" placeholder="เช่น กล่องนอกบุบเล็กน้อย สินค้าด้านในปกติ"></textarea></div>
+        <button type="button" class="linkbtn sm" id="btnAddNote" style="margin-top:10px">+ เพิ่มหมายเหตุ</button>
+        <div class="field" style="margin-top:14px;margin-bottom:0"><label>ผู้ตรวจ</label><div class="chips" id="staffChips"></div></div>
       </div>
+
+      <details class="sec more-sec" id="sec4">
+        <summary><span class="n" style="background:var(--line-2);color:var(--text)">+</span><h3>ข้อมูลเพิ่มเติม <span class="sm" style="font-weight:500">(ไม่บังคับ)</span></h3><span class="sm" id="moreSum"></span></summary>
+        <div style="margin-top:14px">
+          <div class="field">
+            <label for="fClient">ลูกค้า (Client) <span>— ใส่แล้วจะแยกโฟลเดอร์ตามลูกค้า และจำไว้ใช้กับชิ้นถัดไป</span></label>
+            <input class="input" id="fClient" list="clientList" autocomplete="off" placeholder="เลือกหรือพิมพ์ชื่อลูกค้า"><datalist id="clientList"></datalist>
+          </div>
+          <div class="grid3">
+            <div class="field"><label for="fProduct">สินค้า / SKU</label><input class="input" id="fProduct" data-code autocomplete="off" placeholder="ชื่อสินค้า หรือ SKU"></div>
+            <div class="field"><label for="fQty">จำนวน</label><input class="input" id="fQty" type="number" min="0" inputmode="numeric" placeholder="1"></div>
+          </div>
+          <div class="field">
+            <label for="fRef">เลขอ้างอิง <span>(Order / Ref)</span></label>
+            <div class="scanrow"><input class="input code" id="fRef" data-code autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="เว้นว่างได้"><button type="button" class="scanbtn" data-scan="fRef"><svg class="i" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8v8M10 8v8M13 8v8M17 8v8"/></svg></button></div>
+          </div>
+          <div class="field" style="margin-bottom:0"><label>ลายเซ็น <span id="signOpt">(ไม่บังคับ)</span></label>
+            <div class="sig" id="sigBox"><canvas id="sigCanvas"></canvas><div class="ph" id="sigPh">เซ็นชื่อที่นี่ด้วยนิ้วหรือเมาส์</div><button type="button" class="clr" id="sigClear">ล้าง</button></div>
+          </div>
+        </div>
+      </details>
     </div>
 
     <aside class="sticky">
@@ -655,7 +690,7 @@ body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-ri
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.3';
+const APP_VERSION = 'v1.4';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = '';
 
@@ -697,7 +732,19 @@ $('#themeChips').onclick=e=>{ const b=e.target.closest('button'); if(b) setTheme
 
 /* ═══ Backend API (live Apps Script or local demo) ═══ */
 const endpoint = () => LS.get('endpoint','') || DEFAULT_ENDPOINT;
+/* backend compatibility: older Apps Script versions used tag/order; newer use tracking/ref */
+function compatBody(action,body){
+  if(body.record && body.record.tracking!=null) body.record=Object.assign({tag:body.record.tracking, order:body.record.ref||''},body.record);
+  return body;
+}
+function normRows(rows){ return (rows||[]).map(r=>{ const t=r.tracking||r.tag||''; return Object.assign({},r,{tracking:t, ref:r.ref!=null?r.ref:(r.order&&r.order!==t?r.order:''), carrier:r.carrier||carrierOf(String(t).toUpperCase())}); }); }
+function friendlyErr(m){
+  if(/Tagging/.test(m)) return 'ระบบหลังบ้าน (Apps Script) ยังเป็นเวอร์ชันเก่า — แจ้ง Admin อัปเดตโค้ด แล้วกดบันทึกอีกครั้ง';
+  if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'อินเทอร์เน็ตหลุด — ตรวจสัญญาณแล้วกดบันทึกอีกครั้ง (ไฟล์ที่อัปแล้วไม่ต้องอัปซ้ำ)';
+  return m;
+}
 async function api(action, body={}, tries=3){
+  body=compatBody(action,body);
   if(session?.demo || body._demo) return demoApi(action, body);
   const ep=endpoint();
   if(!/^https:\/\/script\.google(usercontent)?\.com\/.+/.test(ep)) throw new Error('ยังไม่ได้ตั้งค่า Backend URL — ไปที่ "การเชื่อมต่อระบบ"');
@@ -803,8 +850,8 @@ function applyConfig(){
   const cur=tagger(); const def=defTagger();
   $('#staffChips').innerHTML=(cfg.staff||[]).map(s=>`<button type="button" data-s="${esc(s)}" class="${s===(cur||def)?'on':''}">${esc(s)}</button>`).join('');
   $('#sTagger').innerHTML='<option value="">— เลือกทุกครั้ง —</option>'+(cfg.staff||[]).map(s=>`<option ${s===def?'selected':''}>${esc(s)}</option>`).join('');
-  $('#signOpt').textContent=cfg.signRequired?'(บังคับ)':'(ไม่บังคับ)';
-  $('#limitTxt').textContent=`JPG, PNG, HEIC, MP4, MOV, PDF · สูงสุด ${cfg.maxFileMB||100} MB/ไฟล์ · เลือกหลายไฟล์พร้อมกันได้`;
+  $('#signOpt').textContent=cfg.signRequired?'(บังคับ)':'(ไม่บังคับ)'; if(cfg.signRequired) $('#sec4').open=true;
+  $('#limitTxt').textContent=`สูงสุด ${cfg.maxFileMB||100} MB/ไฟล์`;
   $('#trkHelp').textContent = cfg.tagExample ? `รูปแบบเลข Tracking เช่น ${cfg.tagExample} — สแกนด้วยกล้อง หรือยิงด้วยเครื่องสแกน USB/Bluetooth` : 'สแกนด้วยกล้อง (บาร์โค้ด / QR) หรือยิงด้วยเครื่องสแกน USB/Bluetooth ได้เลย';
   $('#fTrk').placeholder = cfg.tagExample ? 'เช่น '+cfg.tagExample : 'สแกนเลข Tracking';
   $('#fRef').placeholder = cfg.orderRequired ? 'จำเป็นต้องกรอก' : 'เว้นว่างได้';
@@ -841,13 +888,24 @@ function updateSummary(){
   const tot=files.reduce((a,f)=>a+f.size,0);
   $('#sumFiles').textContent=files.length+' ไฟล์'+(files.length?' · '+fmtSize(tot):'');
   $('#ftotal').textContent=files.length?`รวม ${files.length} ไฟล์ · ${fmtSize(tot)}`:'';
+  $('#chkCount').textContent=$('#sumChk').textContent;
+  const t=trkVal(); $('#sec1').classList.toggle('ok',!!t && !(/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(t) && !s10ok(t)));
+  $('#sec2').classList.toggle('ok',files.length>0);
+  $('#sec3').classList.toggle('ok',!!r && !!tagger() && !(r==='FAIL' && !$('#fNotes').value.trim()));
+  if($('#errbox').style.display==='block' && !uploading && !$('#errbox').dataset.server){ const e=validate(true); if(!e.length) $('#errbox').style.display='none'; else $('#errbox').innerHTML='<b>ยังขาดอีกนิด:</b><ul>'+e.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>'; }
+  const more=[$('#fClient').value.trim(),$('#fProduct').value.trim(),cleanCode($('#fRef').value)].filter(Boolean).join(' · '); $('#moreSum').textContent=more;
 }
+var showNotes=function(on,required){ $('#notesWrap').hidden=!on; $('#btnAddNote').hidden=on; $('#notesReq').textContent=required?'(จำเป็น — บอกสาเหตุที่ไม่ผ่าน)':'(ลูกค้าจะเห็นข้อความนี้)'; }
+$('#btnAddNote').onclick=()=>{ showNotes(true,result()==='FAIL'); $('#fNotes').focus(); };
 $('#formCard').addEventListener('input',updateSummary);
 $('#formCard').addEventListener('change',e=>{
   if(e.target.closest('#checks')){ const all=checkedItems().length===(cfg.checklist||[]).length; if(all && !result()) $('input[name=result][value=PASS]').checked=true; }
+  if(e.target.name==='result'){ const v=e.target.value;
+    if(v==='PASS'){ $$('#checks input').forEach(i=>i.checked=true); if(!$('#fNotes').value.trim()) showNotes(false); }
+    else { showNotes(true,v==='FAIL'); if(v==='FAIL'){ $('#chkWrap').open=true; } setTimeout(()=>$('#fNotes').focus(),50); } }
   updateSummary();
 });
-$('#staffChips').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; $$('#staffChips button').forEach(x=>x.classList.toggle('on',x===b)); updateSummary(); };
+$('#staffChips').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; $$('#staffChips button').forEach(x=>x.classList.toggle('on',x===b)); if(!session?.name) LS.set('defTagger',b.dataset.s); updateSummary(); };
 $('#btnChkAll').onclick=()=>{ const ins=$$('#checks input'); const all=ins.every(i=>i.checked); ins.forEach(i=>i.checked=!all); if(!all && !result()) $('input[name=result][value=PASS]').checked=true; updateSummary(); };
 
 /* duplicate / history check for tag */
@@ -855,7 +913,7 @@ let dupT=0;
 $('#fTrk').addEventListener('input',()=>{ clearTimeout(dupT); $('#trkDup').classList.remove('on'); $('#fTrk').classList.remove('err'); const v=trkVal(); if(v.length>=3) dupT=setTimeout(()=>checkDup(v),700); });
 async function checkDup(v){
   try{ const j=await api('search',{q:v,exact:true,limit:5},1); if(trkVal()!==v) return;
-    const rows=j.rows.filter(r=>String(r.tracking).toLowerCase()===v.toLowerCase());
+    const rows=normRows(j.rows).filter(r=>String(r.tracking).toLowerCase()===v.toLowerCase());
     if(rows.length){ const r=rows[0]; $('#trkDup').innerHTML=`⚠ Tracking นี้เคยบันทึก QC แล้ว ${rows.length}${rows.length>=5?'+':''} ครั้ง — ล่าสุด ${fmtDT(r.at)} โดย ${esc(r.tagger)} (${esc(r.result)}) · <a href="${esc(r.url)}" target="_blank" rel="noopener">เปิดโฟลเดอร์</a>`; $('#trkDup').classList.add('on'); }
   }catch(e){}
 }
@@ -865,11 +923,12 @@ $('#fTrk').addEventListener('input',()=>{ const v=trkVal(), c=carrierOf(v), h=$(
   if(/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(v) && !s10ok(v)){ h.innerHTML='<span style="color:var(--bad)">⚠ เลขพัสดุไปรษณีย์ไม่ถูกต้อง (check digit ไม่ตรง) — สแกน/พิมพ์ใหม่</span>'; return; }
   h.innerHTML=c?`<span style="color:var(--ok)">✓ ${esc(c)}</span>${s10ok(v)?` · <a class="linkbtn" target="_blank" rel="noopener" href="https://track.thailandpost.co.th/?trackNumber=${encodeURIComponent(v)}">ติดตามพัสดุ</a>`:''}`:''; });
 /* code fields: Enter (hand scanner) → next field */
-const CODE_ORDER=['fTrk','fRef','fClient'];
+const CODE_ORDER=['fTrk'];
+function toStep2(){ $('#fTrk').blur(); setTimeout(()=>$('#sec2').scrollIntoView({behavior:'smooth',block:'start'}),150); }
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter') return; const id=e.target.id;
   if(id==='tQ'){ e.preventDefault(); runSearch(); return; }
-  const i=CODE_ORDER.indexOf(id); if(i>=0){ e.preventDefault(); const n=$('#'+CODE_ORDER[i+1]); if(n) n.focus(); }
+  if(id==='fTrk'){ e.preventDefault(); toStep2(); return; }
 });
 /* keyboard-wedge scanner when no field is focused: fast keystrokes + Enter → first empty code field */
 const wedge={buf:'',t:0};
@@ -959,8 +1018,8 @@ function beep(){ try{ navigator.vibrate?.(80); const a=new (window.AudioContext|
 function onScanned(text){
   const v=cleanCode(text); if(!v || !$('#scanModal').classList.contains('open')) return; beep(); const tgt=scan.target; closeScanner();
   if(tgt==='tQ'){ $('#tQ').value=v; runSearch(); toast('สแกนแล้ว: '+v); return; }
-  if(tgt==='fRef' && trkVal()===v.toUpperCase()){ toast('เลขนี้อยู่ในช่อง Tracking แล้ว'); return; }
-  setCode(tgt, tgt==='fTrk'?v.toUpperCase():v); const i=CODE_ORDER.indexOf(tgt); const nx=CODE_ORDER[i+1]; if(nx && nx!=='fClient' && !$('#'+nx).value) setTimeout(()=>$('#'+nx).focus(),100);
+  if(tgt==='fRef' && trkVal()===v.toUpperCase()){ toast('เลขนี้คือเลข Tracking — ไม่ต้องใส่ซ้ำ'); return; }
+  setCode(tgt, tgt==='fTrk'?v.toUpperCase():v); if(tgt==='fTrk') toStep2();
 }
 function stopScanCam(keep){ cancelAnimationFrame(scan.raf); if(scan.stream){ scan.stream.getTracks().forEach(t=>t.stop()); scan.stream=null; } $('#scanVideo').srcObject=null; }
 function closeScanner(){ stopScanCam(); $('#scanModal').classList.remove('open'); }
@@ -1098,18 +1157,20 @@ function clip(x,s,w){ s=String(s); if(x.measureText(s).width<=w) return s; while
 function wrap(x,s,X,Y,w,lh,max){ const words=String(s).replace(/\n/g,' ').split(''); let line='', n=0; for(const ch of words){ if(x.measureText(line+ch).width>w){ x.fillText(line,X,Y+n*lh); line=ch; if(++n>=max) return; } else line+=ch; } if(line) x.fillText(line,X,Y+n*lh); }
 
 /* ═══ Validate & submit ═══ */
-function validate(){
+function validate(quiet){
   const errs=[]; $$('.input.err').forEach(e=>e.classList.remove('err'));
   const bad=(id,m)=>{ errs.push(m); if(id) $(id).classList.add('err'); };
+  const showNotes_=showNotes; if(quiet) showNotes=()=>{};
   const trk=trkVal();
-  if(!trk) bad('#fTrk','สแกนหรือกรอกเลข Tracking');
+  if(!trk) bad('#fTrk','ขั้นที่ 1: สแกนเลข Tracking');
   else if(/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(trk) && !s10ok(trk)) bad('#fTrk','เลข Tracking ไปรษณีย์ไม่ถูกต้อง (check digit ไม่ตรง)');
   else if(cfg.tagPattern){ try{ if(!new RegExp(cfg.tagPattern).test(trk)) bad('#fTrk',`เลข Tracking ไม่ตรงรูปแบบ${cfg.tagExample?' (เช่น '+cfg.tagExample+')':''}`); }catch(e){} }
-  if(cfg.orderRequired && !cleanCode($('#fRef').value)) bad('#fRef','สแกนหรือกรอกเลขอ้างอิง (Order / Ref)');
-  if(!result()) bad(null,'เลือกผล QC (PASS / NOTE / FAIL)');
-  if(!tagger()) bad(null,'เลือกผู้ตรวจ / ผู้แท็ก');
-  if(cfg.signRequired && !sig.has) bad(null,'กรุณาเซ็นลายเซ็นยืนยัน');
-  if(result()==='FAIL' && !$('#fNotes').value.trim()) bad('#fNotes','ผล FAIL — กรุณาระบุหมายเหตุสาเหตุ');
+  if(cfg.orderRequired && !cleanCode($('#fRef').value)){ $('#sec4').open=true; bad('#fRef','ใส่เลขอ้างอิง (Order / Ref) ในข้อมูลเพิ่มเติม'); }
+  if(!result()) bad(null,'ขั้นที่ 3: กด ผ่าน / มีหมายเหตุ / ไม่ผ่าน');
+  if(!tagger()) bad(null,'ขั้นที่ 3: เลือกชื่อผู้ตรวจ');
+  if(cfg.signRequired && !sig.has){ $('#sec4').open=true; bad(null,'เซ็นลายเซ็นในข้อมูลเพิ่มเติม'); }
+  if(result()==='FAIL' && !$('#fNotes').value.trim()){ showNotes(true,true); bad('#fNotes','ไม่ผ่าน — พิมพ์สาเหตุในช่องหมายเหตุ'); }
+  if(quiet) showNotes=showNotes_;
   return errs;
 }
 const setStatus=(s,l)=>{ const p=$('#status'); p.className='pill '+s; p.textContent=l; };
@@ -1126,10 +1187,12 @@ window.addEventListener('beforeunload',e=>{ if(uploading){ e.preventDefault(); e
 
 $('#btnSubmit').onclick=async()=>{
   const errs=validate(), eb=$('#errbox');
-  if(errs.length){ eb.style.display='block'; eb.innerHTML='<ul>'+errs.map(e=>`<li>${esc(e)}</li>`).join('')+'</ul>'; toast('กรอกข้อมูลให้ครบก่อนบันทึก'); return; }
+  delete eb.dataset.server;
+  if(errs.length){ eb.style.display='block'; eb.innerHTML='<b>ยังขาดอีกนิด:</b><ul>'+errs.map(e=>`<li>${esc(e)}</li>`).join('')+'</ul>'; toast(errs[0]);
+    const first=$('.input.err')||(!result()||!tagger()?$('#sec3'):null); if(first) first.scrollIntoView({behavior:'smooth',block:'center'}); return; }
   eb.style.display='none';
   if(!files.length && !confirm('ยังไม่มีรูป/วิดีโอหลักฐาน — บันทึกต่อหรือไม่?')) return;
-  const rec={ tracking:trkVal(), carrier:carrierOf(trkVal()), ref:cleanCode($('#fRef').value), client:$('#fClient').value.trim(),
+  const refV=cleanCode($('#fRef').value), rec={ tracking:trkVal(), carrier:carrierOf(trkVal()), ref:refV.toUpperCase()===trkVal()?'':refV, client:$('#fClient').value.trim(),
     product:$('#fProduct').value.trim(), qty:$('#fQty').value.trim(), result:result(), tagger:tagger(), signed:sig.has, notes:$('#fNotes').value.trim(),
     checklist:(cfg.checklist||[]).map((item,i)=>({item,ok:!!$(`#checks input[data-i="${i}"]`)?.checked})) };
   const btn=$('#btnSubmit'), lbl=t=>{ btn.querySelector('span').textContent=t; };
@@ -1175,7 +1238,7 @@ $('#btnSubmit').onclick=async()=>{
     $('#doneCard').scrollIntoView({behavior:'smooth',block:'center'});
   }catch(err){
     console.error(err); setStatus('error','Error'); setProgress(null,'');
-    if(!err.auth){ eb.style.display='block'; eb.innerHTML='<b>บันทึกไม่สำเร็จ:</b> '+esc(err.message)+'<br>กดบันทึกอีกครั้งได้เลย — ระบบจะอัปโหลดต่อจากไฟล์ที่ค้าง ไม่สร้างโฟลเดอร์ซ้ำ'; }
+    if(!err.auth){ eb.dataset.server='1'; eb.style.display='block'; eb.innerHTML='<b>บันทึกไม่สำเร็จ:</b> '+esc(friendlyErr(err.message))+'<br>กดบันทึกอีกครั้งได้เลย — ระบบจะอัปโหลดต่อจากไฟล์ที่ค้าง ไม่สร้างโฟลเดอร์ซ้ำ'; }
   }finally{ uploading=false; keepAwake(false); btn.disabled=false; lbl('บันทึก QC & อัปโหลด'); syncBar(); }
 };
 const fillMsg=r=>(LS.get('msg',DEFAULT_MSG)).replace(/\{(\w+)\}/g,(_,k)=>({client:r.client||'',ref:r.ref||'-',order:r.ref||'-',tag:r.tracking||'-',carrier:r.carrier?'('+r.carrier+')':'',tracking:r.tracking||'-',tracklink:s10ok(String(r.tracking||'').toUpperCase())?'https://track.thailandpost.co.th/?trackNumber='+encodeURIComponent(String(r.tracking).toUpperCase()):(r.tracking||'-'),result:r.result,drive:r.url})[k]??'');
@@ -1184,7 +1247,8 @@ $('#btnMsg').onclick=()=>{ if(lastRecord) copy(fillMsg(lastRecord),'คัดล
 function resetForm(silent){
   $('#formCard').querySelectorAll('input,select,textarea,button').forEach(e=>{ e.disabled=false; if(/INPUT|TEXTAREA/.test(e.tagName) && !['checkbox','radio','file'].includes(e.type)) e.value=''; if(['checkbox','radio'].includes(e.type)) e.checked=false; });
   files.length=0; renderFiles(); clearSig(); Object.assign(live,{folderId:null,key:null,meta:null,done:new Set()});
-  $$('.input.err').forEach(e=>e.classList.remove('err')); $('#errbox').style.display='none'; $('#trkDup').classList.remove('on'); $('#trkHint').textContent='';
+  $$('.input.err').forEach(e=>e.classList.remove('err')); $('#errbox').style.display='none'; delete $('#errbox').dataset.server; $('#trkDup').classList.remove('on'); $('#trkHint').textContent='';
+  showNotes(false); $('#chkWrap').open=false; $('#sec4').open=!!cfg?.signRequired;
   const def=defTagger(); $$('#staffChips button').forEach(b=>b.classList.toggle('on',b.dataset.s===def));
   $('#doneCard').hidden=true; $('#btnSubmit').hidden=false; setStatus('draft','Draft'); setProgress(null,''); lastRecord=null; updateSummary();
   if(!silent && !IS_MOBILE) $('#fTrk').focus();
@@ -1196,7 +1260,7 @@ $('#btnNext').onclick=()=>{ const cl=$('#fClient').value; resetForm(); $('#fClie
 let lastRows=[];
 async function runSearch(){
   const q=$('#tQ').value.trim(); $('#tCount').textContent='กำลังค้นหา…';
-  try{ const j=await api('search',{q,limit:100}); lastRows=j.rows; renderRows(); $('#tCount').textContent=q?`พบ ${j.rows.length} รายการ`:`ล่าสุด ${j.rows.length} จาก ${j.total} รายการ`; }
+  try{ const j=await api('search',{q,limit:100}); lastRows=normRows(j.rows); renderRows(); $('#tCount').textContent=q?`พบ ${j.rows.length} รายการ`:`ล่าสุด ${j.rows.length} จาก ${j.total} รายการ`; }
   catch(e){ $('#tCount').textContent=''; if(!e.auth) toast(e.message,4000); }
 }
 function renderRows(){
