@@ -42,7 +42,7 @@ Logistic-tracking-and-evidence/            ← root (17wFTaIpnOWenaLl3YrI-qTqqUT
    - Who has access: **Anyone**
    → Deploy → คัดลอก **Web app URL** (`https://script.google.com/macros/s/…/exec`)
 6. ใส่ URL ใน `index.html` ที่ `const DEFAULT_ENDPOINT = '…';` แล้ว push (หรือกรอกที่หน้า Login → "การเชื่อมต่อระบบ")
-7. Login เป็น admin (อีเมล + เบอร์โทร) → เมนู **Admin** → เพิ่มอีเมลพนักงานแต่ละคน → ตั้งเบอร์โทรให้แต่ละอีเมล
+7. พนักงานใช้ได้ทันที — ระบบอ่านรายชื่อจาก **Work tracking log → Employees** (email + phone, active = TRUE) · ถ้าจะใช้บัญชี `tesrshop@gmail.com` ด้วย ให้ Admin ตั้งเบอร์ในเมนู **Admin**
 
 > อัปเดตโค้ด backend ครั้งต่อไป: Deploy → Manage deployments → ✎ → Version: **New version** → Deploy (URL เดิม)
 
@@ -59,7 +59,7 @@ Logistic-tracking-and-evidence/            ← root (17wFTaIpnOWenaLl3YrI-qTqqUT
 | บัญชี | สิทธิ์ |
 |---|---|
 | `ceo.anoney.potter@gmail.com` | Admin — ตั้งพนักงาน, ลูกค้า, Checklist, รูปแบบเลข Tag, รหัสผ่าน, ออกจากระบบทุกเครื่อง |
-| `tesrshop@gmail.com` + อีเมลพนักงาน | Staff — บันทึก QC, ค้นหา/Tracking |
+| พนักงานใน Work tracking log (active) + `tesrshop@gmail.com` | Staff — บันทึก QC, ค้นหา/Tracking · ชื่อผู้แท็กเลือกให้อัตโนมัติตามคนที่ login |
 
 - เข้าระบบด้วย **อีเมลพนักงาน + เบอร์โทร** (พิมพ์มีขีด/เว้นวรรค/+66 ก็ได้ ระบบตัดให้เหลือตัวเลข) — เก็บเป็น salted hash ใน Script Properties
 - ใส่เบอร์ผิด 5 ครั้ง → ล็อก 15 นาที · Session อายุ 7 วัน · ลบอีเมลออกจากรายชื่อ = หมดสิทธิ์ทันที

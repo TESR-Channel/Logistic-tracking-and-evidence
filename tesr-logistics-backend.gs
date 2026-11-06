@@ -6,7 +6,8 @@
  *
  * Login 2 แบบ (ตรวจที่ฝั่ง server ทุกครั้ง):
  *   • Google Sign-In  — ส่ง ID token มาตรวจกับ Google (ต้องตั้ง Google Client ID ในหน้า Admin)
- *   • อีเมลพนักงาน + เบอร์โทร (ใช้เป็นรหัสผ่าน) — เก็บเป็น salted hash ใน Script Properties
+ *   • อีเมลพนักงาน + เบอร์โทร — พนักงานอ่านสดจาก Work tracking log (แท็บ Employees, active=TRUE)
+ *     บัญชีอื่น (admin / tesrshop) ตั้งเบอร์ในหน้า Admin — เก็บเป็น salted hash ใน Script Properties
  * หลัง login ได้ session token (HMAC) อายุ CONFIG.SESSION_DAYS วัน — ทุก action ต้องแนบ token
  *
  * actions (POST, JSON, Content-Type: text/plain):
@@ -26,6 +27,9 @@ const CONFIG = {
   VERSION:        'v1.0',
   ROOT_FOLDER_ID: '17wFTaIpnOWenaLl3YrI-qTqqUTU7bKY9', // "Logistic-tracking-and-evidence" (owner ceo.anoney.potter@gmail.com)
   LOG_SHEET_NAME: 'TESR Logistics QC Log',
+  // รายชื่อพนักงานอ่านสดจาก "Work tracking log" แท็บ Employees (ระบบลงเวลา) — login = email + phone, active = TRUE
+  EMPLOYEE_SHEET_ID: '1Ot4QQc60u71hoIy3K5XOsxOJof0I2I1PnrF79Pq51_I',
+  EMPLOYEE_TAB:      'Employees',
   TIMEZONE:       'Asia/Bangkok',
   SESSION_DAYS:   7,
   MAKE_PUBLIC:    true,   // โฟลเดอร์ record = Anyone with the link · Viewer
@@ -33,7 +37,7 @@ const CONFIG = {
   DEFAULTS: {
     adminEmails:   ['ceo.anoney.potter@gmail.com'],
     staffEmails:   ['tesrshop@gmail.com'],
-    staff:         ['โอ๊ต', 'พี'],
+    staff:         [],     // ชื่อผู้แท็กเพิ่มเติม (นอกเหนือจากพนักงานใน Work tracking log)
     clients:       [],
     checklist:     ['สินค้าตรงรุ่น / SKU', 'จำนวนครบตามออเดอร์', 'สภาพสินค้าไม่มีความเสียหาย', 'อุปกรณ์ / อะไหล่ครบ', 'ฉลาก / บาร์โค้ดถูกต้อง', 'แพ็คกิ้งเรียบร้อย พร้อมส่ง'],
     tagPattern:    '',     // regex ตรวจรูปแบบเลข Tagging (ว่าง = ไม่ตรวจ)
@@ -53,6 +57,7 @@ const P = PropertiesService.getScriptProperties();
 /* ═══ setup / authorize ═══════════════════════════════════════ */
 function setup() {
   DriveApp.getFolderById(CONFIG.ROOT_FOLDER_ID).getName();
+  SpreadsheetApp.openById(CONFIG.EMPLOYEE_SHEET_ID).getName();
   UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/about?fields=user', { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true });
   if (!P.getProperty('SECRET')) P.setProperty('SECRET', Utilities.getUuid() + Utilities.getUuid());
   if (!P.getProperty('APP_CONFIG')) P.setProperty('APP_CONFIG', JSON.stringify(CONFIG.DEFAULTS));
@@ -61,7 +66,8 @@ function setup() {
     Logger.log('ตั้งเบอร์โทร admin แล้ว — ลบเบอร์ออกจาก SETUP_ADMIN_PHONE ได้เลย');
   }
   getSheet_();
-  Logger.log('setup OK · root = ' + DriveApp.getFolderById(CONFIG.ROOT_FOLDER_ID).getName());
+  CacheService.getScriptCache().remove('EMPLOYEES');
+  Logger.log('setup OK · root = ' + DriveApp.getFolderById(CONFIG.ROOT_FOLDER_ID).getName() + ' · พนักงาน ' + employees_().length + ' คน');
 }
 function authorize() { setup(); }
 
@@ -107,11 +113,13 @@ function info_() {
   return { ok: true, version: CONFIG.VERSION, googleClientId: c.googleClientId || '', ready: !!P.getProperty('SECRET') };
 }
 function publicCfg_(c, role) {
-  const o = { staff: c.staff, clients: c.clients, checklist: c.checklist, tagPattern: c.tagPattern, tagExample: c.tagExample,
+  const o = { staff: staffNames_(c), extraStaff: c.staff, clients: c.clients, checklist: c.checklist, tagPattern: c.tagPattern, tagExample: c.tagExample,
               orderRequired: !!c.orderRequired, signRequired: !!c.signRequired, maxFileMB: c.maxFileMB, googleClientId: c.googleClientId,
               rootUrl: 'https://drive.google.com/drive/folders/' + CONFIG.ROOT_FOLDER_ID };
   if (role === 'admin') {
     o.adminEmails = c.adminEmails; o.staffEmails = c.staffEmails;
+    o.employees = employees_().map(function (e) { return { code: e.code, name: e.name, email: e.email, position: e.position, phoneSet: !!e.phone }; });
+    o.employeeSheetUrl = 'https://docs.google.com/spreadsheets/d/' + CONFIG.EMPLOYEE_SHEET_ID;
     const sid = P.getProperty('LOG_SHEET_ID'); o.logSheetUrl = sid ? 'https://docs.google.com/spreadsheets/d/' + sid : '';
     o.passwordSet = {};
     c.adminEmails.concat(c.staffEmails).forEach(function (m) { o.passwordSet[m] = !!P.getProperty('PW_' + m); });
@@ -137,7 +145,6 @@ function saveConfig_(b, s) {
   };
   if (next.tagPattern) { try { new RegExp(next.tagPattern); } catch (e) { throw new Error('รูปแบบเลข Tagging (regex) ไม่ถูกต้อง: ' + e.message); } }
   if (next.adminEmails.indexOf(s.email) < 0) throw new Error('ห้ามลบอีเมลของตัวเองออกจากรายชื่อ Admin');
-  if (!next.staff.length) throw new Error('ต้องมีรายชื่อพนักงานอย่างน้อย 1 คน');
   P.setProperty('APP_CONFIG', JSON.stringify(next));
   return { ok: true, config: publicCfg_(next, 'admin') };
 }
@@ -146,8 +153,31 @@ function saveConfig_(b, s) {
 function roleOf_(email, c) {
   email = String(email || '').toLowerCase();
   if (c.adminEmails.indexOf(email) >= 0) return 'admin';
-  if (c.staffEmails.indexOf(email) >= 0) return 'staff';
+  if (c.staffEmails.indexOf(email) >= 0 || empByEmail_(email)) return 'staff';
   return '';
+}
+/** พนักงาน active จาก Work tracking log → [{code,name,email,phone,position}] (cache 5 นาที) */
+function employees_() {
+  const cache = CacheService.getScriptCache(), hit = cache.get('EMPLOYEES');
+  if (hit) return JSON.parse(hit);
+  let list = [];
+  try {
+    const sh = SpreadsheetApp.openById(CONFIG.EMPLOYEE_SHEET_ID).getSheetByName(CONFIG.EMPLOYEE_TAB);
+    const v = sh.getDataRange().getDisplayValues(), h = v[0].map(function (x) { return String(x).trim().toLowerCase(); });
+    const col = function (n) { return h.indexOf(n); };
+    const ci = { code: col('code'), name: col('name'), email: col('email'), phone: col('phone'), position: col('position'), active: col('active') };
+    list = v.slice(1).filter(function (r) { return r[ci.email] && String(r[ci.active]).toUpperCase() !== 'FALSE'; }).map(function (r) {
+      return { code: String(r[ci.code] || ''), name: String(r[ci.name] || '').trim(), email: String(r[ci.email]).trim().toLowerCase(), phone: phone_(r[ci.phone]), position: String(r[ci.position] || '') };
+    });
+  } catch (e) { Logger.log('อ่าน Employees ไม่ได้: ' + e.message); }
+  cache.put('EMPLOYEES', JSON.stringify(list), 300);
+  return list;
+}
+function empByEmail_(email) { email = String(email || '').toLowerCase(); return employees_().filter(function (e) { return e.email === email; })[0] || null; }
+function staffNames_(c) {
+  const out = [];
+  employees_().map(function (e) { return e.name; }).concat(c.staff || []).forEach(function (n) { if (n && out.indexOf(n) < 0) out.push(n); });
+  return out;
 }
 function hash_(salt, pw) {
   let h = Utilities.computeHmacSha256Signature(pw, salt);
@@ -176,7 +206,9 @@ function login_(b) {
     email = String(b.email || '').trim().toLowerCase();
     const cache = CacheService.getScriptCache(), k = 'fail_' + email, fails = Number(cache.get(k) || 0);
     if (fails >= 5) throw new Error('ใส่เบอร์ผิดหลายครั้ง — รอ 15 นาทีแล้วลองใหม่ หรือใช้ Sign in with Google');
-    if (!roleOf_(email, c) || !checkPw_(email, phone_(b.password))) {
+    const emp = c.adminEmails.indexOf(email) < 0 ? empByEmail_(email) : null, pw = phone_(b.password);
+    const okPw = emp && emp.phone ? (pw.length >= 9 && pw === emp.phone) : checkPw_(email, pw);
+    if (!roleOf_(email, c) || !okPw) {
       cache.put(k, String(fails + 1), 900);
       throw new Error('อีเมลหรือเบอร์โทรไม่ถูกต้อง');
     }
@@ -184,7 +216,8 @@ function login_(b) {
   }
   const role = roleOf_(email, c);
   if (!role) throw new Error('บัญชี ' + email + ' ไม่มีสิทธิ์ใช้งานระบบนี้ — ให้ Admin เพิ่มอีเมลในหน้า Admin');
-  return { ok: true, token: sign_({ e: email, r: role, x: Date.now() + CONFIG.SESSION_DAYS * 864e5, p: Number(P.getProperty('EPOCH') || 0) }), email: email, role: role, config: publicCfg_(c, role) };
+  const me = empByEmail_(email);
+  return { ok: true, token: sign_({ e: email, r: role, x: Date.now() + CONFIG.SESSION_DAYS * 864e5, p: Number(P.getProperty('EPOCH') || 0) }), email: email, role: role, name: me ? me.name : '', config: publicCfg_(c, role) };
 }
 function sign_(o) {
   const body = Utilities.base64EncodeWebSafe(JSON.stringify(o));
@@ -204,7 +237,7 @@ function auth_(b, needAdmin) {
   if (needAdmin && role !== 'admin') throw new Error('เฉพาะ Admin เท่านั้น');
   return { email: o.e, role: role, cfg: c };
 }
-function me_(s) { return { ok: true, email: s.email, role: s.role, config: publicCfg_(s.cfg, s.role) }; }
+function me_(s) { const e = empByEmail_(s.email); return { ok: true, email: s.email, role: s.role, name: e ? e.name : '', config: publicCfg_(s.cfg, s.role) }; }
 function setPassword_(b, s) {
   const email = String(b.email || '').toLowerCase(), pw = phone_(b.password);
   if (!roleOf_(email, s.cfg)) throw new Error('อีเมลนี้ไม่อยู่ในรายชื่อ Admin / Staff');

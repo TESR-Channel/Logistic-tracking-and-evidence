@@ -510,7 +510,8 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
   <section class="view" id="view-admin">
     <div class="agrid">
       <div class="card"><div class="card-h"><h3>พนักงาน & ลูกค้า</h3></div><div class="card-b">
-        <div class="field"><label for="aStaff">รายชื่อพนักงาน (ผู้แท็ก) <span>— 1 ชื่อต่อบรรทัด</span></label><textarea class="input" id="aStaff" style="min-height:100px"></textarea></div>
+        <div class="field"><label>พนักงาน (จาก Work tracking log)</label><div id="aEmps" class="sm"></div><div class="help">เพิ่ม/ลบ/ปิดใช้พนักงาน และแก้เบอร์โทร ที่ <a id="aEmpSheet" class="linkbtn" target="_blank" rel="noopener">Work tracking log → Employees</a> (active = TRUE) — มีผลภายใน 5 นาที</div></div>
+        <div class="field"><label for="aStaff">ชื่อผู้แท็กเพิ่มเติม <span>— เช่น ชื่อเล่น หรือคนที่ไม่อยู่ในระบบลงเวลา (1 ชื่อต่อบรรทัด)</span></label><textarea class="input" id="aStaff" style="min-height:64px"></textarea></div>
         <div class="field"><label for="aClients">รายชื่อลูกค้า Fulfillment <span>— 1 ชื่อต่อบรรทัด (ตัวเลือกช่อง Client)</span></label><textarea class="input" id="aClients" style="min-height:100px"></textarea></div>
         <div class="field"><label for="aCheck">รายการ QC Checklist <span>— 1 ข้อต่อบรรทัด</span></label><textarea class="input" id="aCheck" style="min-height:140px"></textarea></div>
       </div></div>
@@ -524,12 +525,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;back
         <label class="switch"><input type="checkbox" id="aSignReq"> บังคับเซ็นลายเซ็น</label>
         <hr style="border:0;border-top:1px dashed var(--line);margin:14px 0">
         <div class="field"><label for="aAdmins">อีเมล Admin <span>— 1 อีเมลต่อบรรทัด</span></label><textarea class="input" id="aAdmins" style="min-height:64px"></textarea></div>
-        <div class="field"><label for="aStaffEm">อีเมลพนักงาน (Staff) <span>— 1 อีเมลต่อบรรทัด</span></label><textarea class="input" id="aStaffEm" style="min-height:64px"></textarea></div>
+        <div class="field"><label for="aStaffEm">บัญชี Staff เพิ่มเติม <span>— เช่น tesrshop@gmail.com (พนักงานใน Work tracking log ไม่ต้องใส่)</span></label><textarea class="input" id="aStaffEm" style="min-height:64px"></textarea></div>
         <div class="field"><label for="aGcid">Google Sign-In Client ID <span>— เปิดปุ่ม "Sign in with Google"</span></label><input class="input" id="aGcid" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
         <button class="btn btn-primary" id="aSave">บันทึกการตั้งค่า</button>
       </div></div>
       <div class="card"><div class="card-h"><h3>เบอร์โทรเข้าระบบ</h3></div><div class="card-b">
-        <p class="sm" style="margin-bottom:12px">พนักงานเข้าระบบด้วยอีเมล + เบอร์โทรของตัวเอง (เพิ่มอีเมลที่ช่อง "อีเมลพนักงาน" ก่อน แล้วตั้งเบอร์ที่นี่) — สถานะ: <span id="aPwSt"></span></p>
+        <p class="sm" style="margin-bottom:12px">พนักงานใน Work tracking log ใช้อีเมล + เบอร์โทรในชีตนั้นได้ทันที — การ์ดนี้สำหรับบัญชี Admin / Staff เพิ่มเติม — สถานะ: <span id="aPwSt"></span></p>
         <div class="grid2">
           <div class="field"><label for="aPwEmail">บัญชี</label><select class="input" id="aPwEmail"></select></div>
           <div class="field"><label for="aPw">เบอร์โทร <span>(ใช้เป็นรหัสผ่าน)</span></label><input class="input" id="aPw" type="tel" inputmode="tel" autocomplete="off" placeholder="08x-xxx-xxxx"></div>
@@ -669,7 +670,7 @@ async function api(action, body={}, tries=3){
 }
 
 /* demo backend — stores everything in this browser only */
-const DEMO_CFG = { staff:['โอ๊ต','พี'], clients:['ร้านตัวอย่าง A','ร้านตัวอย่าง B'], checklist:['สินค้าตรงรุ่น / SKU','จำนวนครบตามออเดอร์','สภาพสินค้าไม่มีความเสียหาย','อุปกรณ์ / อะไหล่ครบ','ฉลาก / บาร์โค้ดถูกต้อง','แพ็คกิ้งเรียบร้อย พร้อมส่ง'],
+const DEMO_CFG = { staff:['ปิยวรรณ มะธิปิไข','สุริยา ดีคง','เกียรติกานต์ แจ้งนาม','วริศ โอภาส','ปุระชัย เมฆสุข'], extraStaff:[], clients:['ร้านตัวอย่าง A','ร้านตัวอย่าง B'], checklist:['สินค้าตรงรุ่น / SKU','จำนวนครบตามออเดอร์','สภาพสินค้าไม่มีความเสียหาย','อุปกรณ์ / อะไหล่ครบ','ฉลาก / บาร์โค้ดถูกต้อง','แพ็คกิ้งเรียบร้อย พร้อมส่ง'],
   tagPattern:'', tagExample:'', orderRequired:false, signRequired:false, maxFileMB:100, googleClientId:'', rootUrl:'https://drive.google.com/drive/folders/17wFTaIpnOWenaLl3YrI-qTqqUTU7bKY9',
   adminEmails:['ceo.anoney.potter@gmail.com'], staffEmails:['tesrshop@gmail.com'], passwordSet:{}, logSheetUrl:'' };
 async function demoApi(action, b){
@@ -680,7 +681,7 @@ async function demoApi(action, b){
     case 'info': return {ok:true,version:'demo',googleClientId:''};
     case 'login': { const e=String(b.email||'').toLowerCase(); const r=role(e); if(!r) throw new Error('บัญชี '+e+' ไม่มีสิทธิ์ (demo: ใช้ tesrshop@gmail.com หรืออีเมล admin)'); return {ok:true,token:'demo',email:e,role:r,config:c}; }
     case 'me': return {ok:true,email:session.email,role:session.role,config:c};
-    case 'saveConfig': { const n=Object.assign({},c,b.config); LS.set('demo_cfg',n); return {ok:true,config:n}; }
+    case 'saveConfig': { const n=Object.assign({},c,b.config); n.extraStaff=b.config.staff; n.staff=DEMO_CFG.staff.concat(b.config.staff.filter(x=>!DEMO_CFG.staff.includes(x))); LS.set('demo_cfg',n); return {ok:true,config:n}; }
     case 'setPassword': return {ok:true};
     case 'logoutAll': return {ok:true};
     case 'create': { const d=new Date(), id='QC-'+String(d.getFullYear()).slice(2)+pad2(d.getMonth()+1)+pad2(d.getDate())+'-'+String(rows.length+1).padStart(3,'0');
@@ -719,7 +720,7 @@ async function doLogin(body){
   const btn=$('#lBtn'); btn.disabled=true; $('#lErr').hidden=true;
   try{
     const j=await api('login',body,1);
-    session={token:j.token,email:j.email,role:j.role,config:j.config,demo:!!body._demo};
+    session={token:j.token,email:j.email,role:j.role,name:j.name||'',config:j.config,demo:!!body._demo};
     LS.set('session',session); LS.set('lastEmail',j.email); $('#lPass').value='';
     startApp();
   }catch(e){ $('#lErr').hidden=false; $('#lErr').textContent=e.message; }
@@ -741,17 +742,17 @@ $('#btnLogout').onclick=logout; $('#mLogout').onclick=logout;
 function startApp(){
   cfg=session.config;
   $('#loginView').hidden=true; $('#appView').hidden=false;
-  $('#whoEmail').textContent=session.email; $('#whoRole').textContent=session.role==='admin'?'ADMIN':'STAFF'; $('#whoAv').textContent=session.email[0].toUpperCase();
+  $('#whoEmail').textContent=session.name?session.name+' · '+session.email:session.email; $('#whoRole').textContent=session.role==='admin'?'ADMIN':'STAFF'; $('#whoAv').textContent=session.email[0].toUpperCase();
   $('#navAdmin').hidden=session.role!=='admin'; $('#demoPill').hidden=!session.demo;
   $('#sumAcct').textContent=session.email;
   applyConfig(); resetForm(true); show('new');
-  api('me').then(j=>{ session.config=j.config; session.role=j.role; LS.set('session',session); cfg=j.config; applyConfig(); }).catch(()=>{});
+  api('me').then(j=>{ session.config=j.config; session.role=j.role; session.name=j.name||session.name||''; LS.set('session',session); cfg=j.config; applyConfig(); }).catch(()=>{});
 }
 function applyConfig(){
   $('#clientList').innerHTML=(cfg.clients||[]).map(c=>`<option value="${esc(c)}">`).join('');
   const prev=checkedItems();
   $('#checks').innerHTML=(cfg.checklist||[]).map((c,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${prev.includes(c)?'checked':''}><span class="bx"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span>${esc(c)}</span></label>`).join('');
-  const cur=tagger(); const def=LS.get('defTagger','');
+  const cur=tagger(); const def=defTagger();
   $('#staffChips').innerHTML=(cfg.staff||[]).map(s=>`<button type="button" data-s="${esc(s)}" class="${s===(cur||def)?'on':''}">${esc(s)}</button>`).join('');
   $('#sTagger').innerHTML='<option value="">— เลือกทุกครั้ง —</option>'+(cfg.staff||[]).map(s=>`<option ${s===def?'selected':''}>${esc(s)}</option>`).join('');
   $('#orderReq').hidden=!cfg.orderRequired; $('#signOpt').textContent=cfg.signRequired?'(บังคับ)':'(ไม่บังคับ)';
@@ -775,6 +776,7 @@ function show(v){
 $('#nav').onclick=e=>{ const b=e.target.closest('button'); if(b) show(b.dataset.view); };
 
 /* ═══ Form state ═══ */
+const defTagger = () => { const own=session?.name; return own && (cfg?.staff||[]).includes(own) ? own : LS.get('defTagger',''); };
 const tagger = () => $('#staffChips button.on')?.dataset.s || '';
 const result = () => $('input[name=result]:checked')?.value || '';
 function checkedItems(){ return $$('#checks input').filter(i=>i.checked).map(i=>cfg.checklist[+i.dataset.i]); }
@@ -1103,7 +1105,7 @@ function resetForm(silent){
   $('#formCard').querySelectorAll('input,select,textarea,button').forEach(e=>{ e.disabled=false; if(/INPUT|TEXTAREA/.test(e.tagName) && !['checkbox','radio','file'].includes(e.type)) e.value=''; if(['checkbox','radio'].includes(e.type)) e.checked=false; });
   files.length=0; renderFiles(); clearSig(); Object.assign(live,{folderId:null,key:null,meta:null,done:new Set()});
   $$('.input.err').forEach(e=>e.classList.remove('err')); $('#errbox').style.display='none'; $('#tagDup').classList.remove('on');
-  const def=LS.get('defTagger',''); $$('#staffChips button').forEach(b=>b.classList.toggle('on',b.dataset.s===def));
+  const def=defTagger(); $$('#staffChips button').forEach(b=>b.classList.toggle('on',b.dataset.s===def));
   $('#doneCard').hidden=true; $('#btnSubmit').hidden=false; setStatus('draft','Draft'); setProgress(null,''); lastRecord=null; updateSummary();
   if(!silent && !IS_MOBILE) $('#fTag').focus();
 }
@@ -1151,7 +1153,9 @@ $('#mClose').onclick=()=>$('#modal').classList.remove('open'); $('#modal').addEv
 const lines = s => s.split('\n').map(x=>x.trim()).filter(Boolean);
 async function loadAdmin(){
   try{ const j=await api('me'); cfg=j.config; session.config=cfg; LS.set('session',session); applyConfig(); }catch(e){ if(e.auth) return; }
-  $('#aStaff').value=(cfg.staff||[]).join('\n'); $('#aClients').value=(cfg.clients||[]).join('\n'); $('#aCheck').value=(cfg.checklist||[]).join('\n');
+  $('#aStaff').value=(cfg.extraStaff||[]).join('\n');
+  $('#aEmps').innerHTML=(cfg.employees||[]).length?'<table style="font-size:13px">'+cfg.employees.map(e=>`<tr><td class="mono">${esc(e.code)}</td><td><b>${esc(e.name)}</b><br><span class="sm">${esc(e.position)}</span></td><td class="sm">${esc(e.email)}</td><td>${e.phoneSet?'<b style="color:var(--ok)">✓ เบอร์</b>':'<b style="color:var(--warn)">ไม่มีเบอร์</b>'}</td></tr>`).join('')+'</table>':'<span style="color:var(--warn)">ยังอ่านรายชื่อไม่ได้ — ตรวจว่า Run setup() แล้ว</span>';
+  $('#aEmpSheet').href=cfg.employeeSheetUrl||'#'; $('#aClients').value=(cfg.clients||[]).join('\n'); $('#aCheck').value=(cfg.checklist||[]).join('\n');
   $('#aTagEx').value=cfg.tagExample||''; $('#aTagRe').value=cfg.tagPattern||''; $('#aMax').value=cfg.maxFileMB||100;
   $('#aOrderReq').checked=!!cfg.orderRequired; $('#aSignReq').checked=!!cfg.signRequired;
   $('#aAdmins').value=(cfg.adminEmails||[]).join('\n'); $('#aStaffEm').value=(cfg.staffEmails||[]).join('\n'); $('#aGcid').value=cfg.googleClientId||'';
@@ -1166,7 +1170,6 @@ $('#aSave').onclick=async()=>{
   const conf={ staff:lines($('#aStaff').value), clients:lines($('#aClients').value), checklist:lines($('#aCheck').value), tagExample:$('#aTagEx').value.trim(), tagPattern:re,
     maxFileMB:Number($('#aMax').value)||100, orderRequired:$('#aOrderReq').checked, signRequired:$('#aSignReq').checked,
     adminEmails:lines($('#aAdmins').value.toLowerCase()), staffEmails:lines($('#aStaffEm').value.toLowerCase()), googleClientId:$('#aGcid').value.trim() };
-  if(!conf.staff.length) return toast('ต้องมีพนักงานอย่างน้อย 1 คน');
   try{ const j=await api('saveConfig',{config:conf}); cfg=Object.assign({},cfg,j.config); session.config=cfg; LS.set('session',session); LS.set('gcid',cfg.googleClientId||''); applyConfig(); loadAdmin(); toast('บันทึกการตั้งค่าแล้ว — มีผลกับทุกเครื่อง'); }
   catch(e){ if(!e.auth) toast(e.message,4500); }
 };
