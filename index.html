@@ -103,6 +103,7 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .tb-r{display:flex;align-items:center;gap:10px}
 .theme-t{width:40px;height:40px;border-radius:10px;border:1px solid var(--line-2);background:var(--card);display:grid;place-items:center;color:var(--text)}
 .theme-t:hover{border-color:var(--gold)}
+.ver-pill{font-family:var(--display);font-weight:700;letter-spacing:.06em;font-size:13px;background:var(--ink);color:var(--gold);padding:4px 10px;border-radius:999px;border:1px solid var(--gold-dim);white-space:nowrap;vertical-align:middle}
 .demo-pill{font-family:var(--display);font-weight:700;letter-spacing:.08em;font-size:12px;background:var(--warn-bg);color:var(--warn);padding:4px 10px;border-radius:999px}
 
 .content{padding:16px 34px 24px;flex:1}
@@ -432,7 +433,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
       <img src="tesr-logo.png" alt="TESR">
       <div><div class="wm">T<b>E</b>SR</div><div class="tag">LOGISTICS · FULFILLMENT</div></div>
     </div>
-    <h2>QC & Evidence Record</h2>
+    <h2>QC & Evidence Record <span class="ver-pill" data-ver></span></h2>
     <p class="s">ระบบบันทึกการตรวจสินค้า (QC) พร้อมรูป/วิดีโอหลักฐาน — เข้าสู่ระบบด้วยบัญชีที่ได้รับอนุญาต</p>
     <div class="lerr" id="lErr" hidden></div>
     <div id="gWrap" hidden>
@@ -452,7 +453,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="btn btn-ghost btn-sm" id="lEpSave" style="background:#0D0D0F;color:#EDEBE6;border-color:#34343A">บันทึก & ทดสอบ</button><span id="lEpSt" class="help"></span></div>
       <div style="margin-top:12px">ยังไม่ได้ติดตั้ง backend? <button type="button" class="linkbtn" id="lDemo" style="color:var(--gold)">ลองใช้โหมด Demo</button> (ไม่อัปโหลดจริง)</div>
     </details>
-    <div class="lfoot">© TESR Co., Ltd. · Robot · AI · IoT · Automation</div>
+    <div class="lfoot">TESR Logistics QC & Evidence <b data-ver style="color:var(--gold)"></b> · © TESR Co., Ltd.</div>
   </div>
 </section>
 
@@ -464,7 +465,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
     <div><div class="wm">T<b>E</b>SR</div><div class="tag">ROBOTICS | AI | AUTOMATION</div></div>
   </div>
   <div class="mwho"><button id="mTheme" title="Theme"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button id="mLogout" title="Sign out"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button></div>
-  <div class="unit">TESR LOGISTICS</div>
+  <div class="unit">TESR LOGISTICS QC <span data-ver style="color:var(--gold);margin-left:4px"></span></div>
   <nav class="nav" id="nav">
     <button data-view="station"><svg class="i" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5z"/><circle cx="7" cy="10" r="1.3" fill="currentColor"/></svg>Scan &amp; Record</button>
     <button class="active" data-view="new"><svg class="i" viewBox="0 0 24 24"><path d="M3 5v14M7 5v14M11 5v14M14 5v14M18 5v14M21 5v14"/></svg>New QC Record</button>
@@ -489,7 +490,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 <div class="main">
   <div class="topbar">
     <div><h1 id="pageTitle">New QC Record</h1><p id="pageSub">สแกน Tracking → ตรวจ QC → ถ่ายรูป/วิดีโอหลักฐาน → บันทึกลง Google Drive</p></div>
-    <div class="tb-r"><span class="demo-pill" id="demoPill" hidden>DEMO</span><button class="theme-t hide-m" id="btnTheme" title="สลับ Dark / Light"></button></div>
+    <div class="tb-r"><span class="ver-pill" data-ver title="TESR Logistics QC & Evidence — เวอร์ชันที่ใช้อยู่"></span><span class="demo-pill" id="demoPill" hidden>DEMO</span><button class="theme-t hide-m" id="btnTheme" title="สลับ Dark / Light"></button></div>
   </div>
 
   <div class="content">
@@ -766,7 +767,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.5';
+const APP_VERSION = 'v1.5.1';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwCh3teWYeVpXZH6Z5xZHNQZABv2iyq-Ag8YIvsixjDyJTGbYodo_Vgb6nKgUfa4dMa/exec';
 
@@ -1644,7 +1645,7 @@ window.addEventListener('online',()=>{ ST.queue.forEach(q=>{ if(q.status==='err'
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && stActive()) keepAwake(true); });
 
 /* ═══ Init ═══ */
-$('#verTag').textContent=APP_VERSION; setTheme(document.documentElement.dataset.theme);
+$('#verTag').textContent='TESR Logistics QC '+APP_VERSION; $$('[data-ver]').forEach(e=>e.textContent=APP_VERSION); document.title='TESR Logistics QC '+APP_VERSION; setTheme(document.documentElement.dataset.theme);
 if(session?.token) startApp(); else showLogin();
 syncBar();
 </script>
