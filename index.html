@@ -350,6 +350,38 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
   .cam-big{min-width:0;padding:18px 10px}
   .result label{padding:14px 6px}.result b{font-size:18px}.result span{font-size:11px}
 }
+/* ── Scan & Record station ── */
+.st-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:20px;align-items:start}
+.st-stage{position:relative;background:#000;aspect-ratio:16/9;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;border:4px solid transparent;transition:border-color .2s}
+.st-stage video{width:100%;height:100%;object-fit:contain;display:block}
+.st-stage.rec{border-color:var(--crimson-3);animation:stpulse 1.4s infinite}
+@keyframes stpulse{50%{border-color:#ff5a66}}
+.st-banner{position:absolute;left:0;right:0;top:0;padding:12px 16px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;color:#fff;background:linear-gradient(rgba(0,0,0,.78),transparent)}
+.st-banner b{font-family:var(--display);font-size:30px;letter-spacing:.04em;line-height:1}
+.st-banner span{font-size:15px;opacity:.92}
+.st-banner.idle b{color:#6EE7A8}.st-banner.rec b{color:#FF6B76}.st-banner.warn b{color:#FFD166}
+.st-rec{position:absolute;left:0;right:0;bottom:0;display:none;align-items:center;gap:14px;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff;font-family:var(--display);font-weight:700}
+.st-rec.on{display:flex}
+.st-rec i{width:14px;height:14px;border-radius:50%;background:var(--crimson-3);animation:blink 1s infinite;flex:none}
+.st-rec .t{font-size:clamp(20px,3.4vw,40px);letter-spacing:.04em;overflow-wrap:anywhere}
+.st-rec .c{margin-left:auto;font-size:clamp(20px,3vw,34px)}
+.st-ctl{display:flex;gap:8px;align-items:center;padding:12px 14px;flex-wrap:wrap}
+.st-ctl .input{flex:1;min-width:150px}
+.st-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 14px}
+.st-steps div{border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-size:12.5px;color:var(--muted);background:var(--card-2)}
+.st-steps b{display:block;color:var(--text);font-size:13.5px}
+.st-q{list-style:none;max-height:52vh;overflow:auto}
+.st-q li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.st-q li:last-child{border-bottom:0}
+.st-q .tk{font-family:var(--display);font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.st-q .mt{font-size:11.5px;color:var(--muted);grid-column:1/3}
+.st-q .bar{grid-column:1/3;height:3px;background:var(--line);border-radius:2px;overflow:hidden}
+.st-q .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--crimson),var(--gold));transition:width .3s}
+.pill.wait{background:var(--field-ro);color:var(--muted)}
+.pill.up{background:#EEF1FF;color:#2F45B5}
+.pill.PACKED{background:var(--ok-bg);color:var(--ok)}
+@media(max-width:1180px){.st-grid{grid-template-columns:1fr}}
+@media(max-width:820px){.st-steps{grid-template-columns:1fr}.st-banner b{font-size:22px}}
 .mbar{display:none}
 @media(max-width:1180px){
   body.on-new .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;gap:10px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line);box-shadow:0 -8px 24px -12px rgba(0,0,0,.25)}
@@ -434,6 +466,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
   <div class="mwho"><button id="mTheme" title="Theme"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button id="mLogout" title="Sign out"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button></div>
   <div class="unit">TESR LOGISTICS</div>
   <nav class="nav" id="nav">
+    <button data-view="station"><svg class="i" viewBox="0 0 24 24"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5z"/><circle cx="7" cy="10" r="1.3" fill="currentColor"/></svg>Scan &amp; Record</button>
     <button class="active" data-view="new"><svg class="i" viewBox="0 0 24 24"><path d="M3 5v14M7 5v14M11 5v14M14 5v14M18 5v14M21 5v14"/></svg>New QC Record</button>
     <button data-view="track"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>Tracking / ค้นหา</button>
     <button data-view="admin" id="navAdmin" hidden><svg class="i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Admin</button>
@@ -568,6 +601,49 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
   </div>
   </section>
 
+  <!-- ── SCAN & RECORD STATION ── -->
+  <section class="view" id="view-station">
+    <div class="st-grid">
+      <div class="card">
+        <div class="st-stage" id="stStage">
+          <video id="stVideo" autoplay playsinline muted></video>
+          <div class="st-banner idle" id="stBanner"><b id="stState">กำลังเปิดกล้อง…</b><span id="stHint"></span></div>
+          <div class="st-rec" id="stRec"><i></i><span class="t" id="stTrk"></span><span class="c" id="stTime">00:00</span></div>
+          <div class="cam-err" id="stErr"></div>
+        </div>
+        <div class="st-ctl">
+          <input class="input code" id="stManual" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="ไม่มีเครื่องยิง? พิมพ์เลข Tracking แล้วกด Enter">
+          <button class="btn btn-primary" id="stStop" hidden><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>จบ & บันทึก</button>
+          <button class="btn btn-ghost" id="stCancel" hidden>ยกเลิกคลิปนี้</button>
+        </div>
+        <div class="st-steps">
+          <div><b>1 · ยิงบาร์โค้ดใบปะหน้า</b>เริ่มอัดวิดีโอทันที</div>
+          <div><b>2 · แพ็คสินค้าหน้ากล้อง</b>ไม่ต้องแตะคอม</div>
+          <div><b>3 · ยิงบาร์โค้ดเดิมบนกล่อง</b>จบ → อัปขึ้น Drive เอง</div>
+        </div>
+      </div>
+      <aside>
+        <div class="card">
+          <div class="card-h"><h3>สถานีนี้</h3></div>
+          <div class="card-b">
+            <div class="field"><label for="stTagger">ผู้แพ็ค / ผู้ตรวจ <b class="req">*</b></label><select class="input" id="stTagger"></select></div>
+            <div class="field"><label for="stClient">ลูกค้า (Client) <span>— ไม่บังคับ แยกโฟลเดอร์ตามลูกค้า</span></label><input class="input" id="stClient" list="clientList" autocomplete="off" placeholder="เว้นว่างได้"></div>
+            <div class="field"><label for="stCam">กล้อง</label><select class="input" id="stCam"></select></div>
+            <div class="grid2">
+              <div class="field"><label for="stQ">คุณภาพวิดีโอ</label><select class="input" id="stQ"><option value="eco">ประหยัด 360p</option><option value="std">มาตรฐาน 540p</option><option value="hi">ชัด 720p</option></select></div>
+              <div class="field"><label for="stMax">หยุดเองเมื่อครบ</label><select class="input" id="stMax"><option value="5">5 นาที</option><option value="10">10 นาที</option><option value="20">20 นาที</option><option value="30">30 นาที</option></select></div>
+            </div>
+            <div class="help" id="stQInfo"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <div class="card-h"><h3>รอบนี้</h3><span class="sm" id="stCount" style="margin-left:auto"></span></div>
+          <div class="card-b"><ul class="st-q" id="stList"></ul><div class="sm" id="stEmpty">ยังไม่มีรายการ — ยิงบาร์โค้ดเพื่อเริ่ม</div></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
   <!-- ── TRACKING ── -->
   <section class="view" id="view-track">
     <div class="card">
@@ -690,7 +766,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.4';
+const APP_VERSION = 'v1.5';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwCh3teWYeVpXZH6Z5xZHNQZABv2iyq-Ag8YIvsixjDyJTGbYodo_Vgb6nKgUfa4dMa/exec';
 
@@ -840,10 +916,13 @@ function startApp(){
   $('#whoEmail').textContent=session.name?session.name+' · '+session.email:session.email; $('#whoRole').textContent=session.role==='admin'?'ADMIN':'STAFF'; $('#whoAv').textContent=session.email[0].toUpperCase();
   $('#navAdmin').hidden=session.role!=='admin'; $('#demoPill').hidden=!session.demo;
   $('#sumAcct').textContent=session.email;
-  applyConfig(); resetForm(true); show('new');
+  applyConfig(); resetForm(true); show(homeView()); stInit();
   api('me').then(j=>{ session.config=j.config; session.role=j.role; session.name=j.name||session.name||''; LS.set('session',session); cfg=j.config; applyConfig(); }).catch(()=>{});
 }
+/* inspectors who are not in the attendance sheet */
+const EXTRA_STAFF=['Anon Morsuwan'], OWN_NAME={'ceo.anoney.potter@gmail.com':'Anon Morsuwan'};
 function applyConfig(){
+  cfg.staff=[...new Set([...(cfg.staff||[]),...EXTRA_STAFF])];
   $('#clientList').innerHTML=(cfg.clients||[]).map(c=>`<option value="${esc(c)}">`).join('');
   const prev=checkedItems();
   $('#checks').innerHTML=(cfg.checklist||[]).map((c,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${prev.includes(c)?'checked':''}><span class="bx"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span>${esc(c)}</span></label>`).join('');
@@ -857,23 +936,27 @@ function applyConfig(){
   $('#fRef').placeholder = cfg.orderRequired ? 'จำเป็นต้องกรอก' : 'เว้นว่างได้';
   $('#tRoot').href=cfg.rootUrl||'#';
   $('#sMsg').value=LS.get('msg',DEFAULT_MSG); $('#sEp').value=endpoint();
-  updateSummary();
+  updateSummary(); stApply();
 }
 
 /* ═══ Navigation ═══ */
-const TITLES={ new:['New QC Record','สแกน Tracking → ตรวจ QC → ถ่ายรูป/วิดีโอหลักฐาน → บันทึกลง Google Drive'], track:['Tracking / ค้นหา','ค้นหาประวัติ QC ด้วยเลข Tracking หรือเลขอ้างอิง — สแกนเพื่อค้นหาได้'], admin:['Admin','ตั้งค่าพนักงาน ลูกค้า Checklist และสิทธิ์การเข้าใช้'], settings:['Settings','ธีม ผู้แท็กประจำเครื่อง และการเชื่อมต่อ'] };
+const TITLES={ station:['Scan & Record · ยิงแล้วอัด','ยิงบาร์โค้ด → อัดวิดีโอแพ็คสินค้าอัตโนมัติ → ยิงอีกครั้งเพื่อจบ → ขึ้น Google Drive เอง'], new:['New QC Record','สแกน Tracking → ตรวจ QC → ถ่ายรูป/วิดีโอหลักฐาน → บันทึกลง Google Drive'], track:['Tracking / ค้นหา','ค้นหาประวัติ QC ด้วยเลข Tracking หรือเลขอ้างอิง — สแกนเพื่อค้นหาได้'], admin:['Admin','ตั้งค่าพนักงาน ลูกค้า Checklist และสิทธิ์การเข้าใช้'], settings:['Settings','ธีม ผู้แท็กประจำเครื่อง และการเชื่อมต่อ'] };
+const homeView = () => LS.get('home', IS_MOBILE?'new':'station');
 function show(v){
   if(v==='admin' && session?.role!=='admin') v='new';
+  if(v!=='station' && (ST.state==='rec'||ST.state==='busy')){ toast('กำลังอัดวิดีโออยู่ — กด "จบ & บันทึก" ก่อนเปลี่ยนหน้า'); return; }
+  if(v==='new'||v==='station') LS.set('home',v);
   document.body.classList.toggle('on-new',v==='new');
   $$('.view').forEach(e=>e.classList.toggle('active',e.id==='view-'+v)); $$('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
   $('#pageTitle').textContent=TITLES[v][0]; $('#pageSub').textContent=TITLES[v][1];
   if(v==='track') runSearch(); if(v==='admin') loadAdmin();
+  if(v==='station') stEnter(); else stLeave();
   window.scrollTo({top:0});
 }
 $('#nav').onclick=e=>{ const b=e.target.closest('button'); if(b) show(b.dataset.view); };
 
 /* ═══ Form state ═══ */
-const defTagger = () => { const own=session?.name; return own && (cfg?.staff||[]).includes(own) ? own : LS.get('defTagger',''); };
+const defTagger = () => { const own=session?.name||OWN_NAME[session?.email]; return own && (cfg?.staff||[]).includes(own) ? own : LS.get('defTagger',''); };
 const tagger = () => $('#staffChips button.on')?.dataset.s || '';
 const result = () => $('input[name=result]:checked')?.value || '';
 function checkedItems(){ return $$('#checks input').filter(i=>i.checked).map(i=>cfg.checklist[+i.dataset.i]); }
@@ -933,7 +1016,7 @@ document.addEventListener('keydown',e=>{
 /* keyboard-wedge scanner when no field is focused: fast keystrokes + Enter → first empty code field */
 const wedge={buf:'',t:0};
 document.addEventListener('keydown',e=>{
-  const a=document.activeElement; if(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return; if($('#appView').hidden) return;
+  const a=document.activeElement; if(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return; if($('#appView').hidden || $('#view-station').classList.contains('active')) return;
   if(e.ctrlKey||e.metaKey||e.altKey) return; const now=performance.now();
   if(now-wedge.t>60) wedge.buf=''; wedge.t=now;
   if(e.key==='Enter'){ if(wedge.buf.length>=3){ e.preventDefault(); const code=wedge.buf; wedge.buf='';
@@ -1270,7 +1353,7 @@ function renderRows(){
     <td class="mono" style="font-size:15px">${esc(r.tracking)}</td>
     <td>${esc(r.carrier||'-')}${r.ref?`<br><span class="sm">Ref: ${esc(r.ref)}</span>`:''}</td>
     <td>${esc(r.client||'-')}<br><span class="sm">${esc(r.product||'')}${r.qty?' ×'+esc(r.qty):''}</span></td>
-    <td><span class="pill ${r.result==='FAIL'?'FAIL':r.result==='PASS'?'PASS':'COND'}">${esc(r.result||'-')}</span></td>
+    <td><span class="pill ${r.result==='FAIL'?'FAIL':/^(PASS|PACKED)$/.test(r.result)?'PASS':'COND'}">${esc(r.result||'-')}</span></td>
     <td>${esc(r.tagger)}${r.signed?' ✍︎':''}<br><span class="sm">${esc(r.account||'')}</span></td>
     <td>${esc(r.files)}</td>
     <td><div class="actions">
@@ -1354,6 +1437,211 @@ document.addEventListener('paste',e=>{
 
 /* ═══ Installable app + fast reopen (network-first, never stale) ═══ */
 if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* ═══════════════════════════════════════════════════════════
+   Scan & Record — packing station
+   ยิงบาร์โค้ด → เริ่มอัดวิดีโอจากเว็บแคม → ยิงบาร์โค้ดเดิมอีกครั้ง → จบ บีบอัด และอัปขึ้น Google Drive เอง
+   ═══════════════════════════════════════════════════════════ */
+const ST_Q={ eco:{w:640,fps:10,bps:260000,label:'ประหยัด'}, std:{w:960,fps:12,bps:480000,label:'มาตรฐาน'}, hi:{w:1280,fps:15,bps:950000,label:'ชัด'} };
+const ST={ state:'off', cur:null, stream:null, rec:null, chunks:[], canvas:null, ticker:null, timer:0, other:null, queue:[], pumping:false, db:null, ac:null };
+const stActive = () => $('#view-station').classList.contains('active') && !$('#appView').hidden;
+const stQ = () => ST_Q[LS.get('stQ','std')]||ST_Q.std;
+const mmss = s => pad2(Math.floor(s/60))+':'+pad2(Math.floor(s%60));
+
+/* ── local queue storage: clips survive a refresh / power cut until they are on Drive ── */
+function stDb(){ return ST.db||(ST.db=new Promise((res,rej)=>{ const r=indexedDB.open('tesr-qc',1); r.onupgradeneeded=()=>r.result.createObjectStore('pending',{keyPath:'id'}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
+async function stDbDo(mode,fn){ try{ const db=await stDb(); return await new Promise((res,rej)=>{ const tx=db.transaction('pending',mode), rq=fn(tx.objectStore('pending')); tx.oncomplete=()=>res(rq&&rq.result); tx.onerror=tx.onabort=()=>rej(tx.error); }); }catch(e){ console.warn('station storage',e); } }
+const stSave = it => stDbDo('readwrite',s=>s.put({id:it.id,tracking:it.tracking,carrier:it.carrier,tagger:it.tagger,client:it.client,at:it.at,dur:it.dur,size:it.size,mime:it.mime,name:it.name,blob:it.blob,folderId:it.folderId,folderName:it.folderName,url:it.url,recId:it.recId,sent:it.sent,account:it.account}));
+const stDrop = id => stDbDo('readwrite',s=>s.delete(id));
+
+/* ── sounds: up = start, down = saved, low = problem ── */
+function stTone(kind){ try{ const a=ST.ac||(ST.ac=new (window.AudioContext||window.webkitAudioContext)()); if(a.state==='suspended') a.resume();
+  const seq={start:[[880,0,.09],[1320,.1,.14]], stop:[[1320,0,.09],[880,.1,.09],[1320,.2,.16]], warn:[[240,0,.3]]}[kind];
+  for(const [f,t,d] of seq){ const o=a.createOscillator(), g=a.createGain(); o.type=kind==='warn'?'square':'sine'; o.frequency.value=f; g.gain.value=kind==='warn'?.06:.12; o.connect(g); g.connect(a.destination); o.start(a.currentTime+t); o.stop(a.currentTime+t+d); } }catch(e){} }
+
+function stUI(){
+  const b=$('#stBanner'), rec=ST.state==='rec';
+  $('#stStage').classList.toggle('rec',rec); $('#stRec').classList.toggle('on',rec);
+  $('#stStop').hidden=!rec; $('#stCancel').hidden=!rec; $('#stManual').hidden=false;
+  ['stTagger','stCam','stQ','stMax'].forEach(id=>$('#'+id).disabled=rec);
+  const set=(cls,t,h)=>{ b.className='st-banner '+cls; $('#stState').textContent=t; $('#stHint').textContent=h; };
+  if(ST.state==='off'||ST.state==='cam') set('warn','กำลังเปิดกล้อง…','');
+  else if(ST.state==='nocam') set('warn','ไม่พบกล้อง','ตรวจสายเว็บแคม แล้วเลือกกล้องด้านขวา');
+  else if(ST.state==='busy') set('warn','กำลังบันทึกคลิป…','');
+  else if(rec){ set('rec','● กำลังอัด','แพ็คเสร็จแล้วยิงบาร์โค้ดเดิมบนกล่องอีกครั้ง'); $('#stTrk').textContent=ST.cur.tracking; }
+  else set('idle','พร้อม',$('#stTagger').value?'ยิงบาร์โค้ดบนใบปะหน้าเพื่อเริ่มอัด':'เลือกผู้แพ็คด้านขวาก่อน');
+}
+function stWarn(msg){ stTone('warn'); const b=$('#stBanner'); b.className='st-banner warn'; $('#stState').textContent='⚠'; $('#stHint').textContent=msg; clearTimeout(ST.wt); ST.wt=setTimeout(stUI,4500); }
+
+/* ── camera ── */
+async function stCamStart(){
+  if(ST.state==='rec'||ST.state==='busy') return;
+  stCamStop(); ST.state='cam'; stUI(); $('#stErr').classList.remove('on');
+  if(!navigator.mediaDevices?.getUserMedia){ ST.state='nocam'; $('#stErr').textContent='เบราว์เซอร์นี้เปิดกล้องไม่ได้ — ใช้ Chrome บนคอมที่ต่อเว็บแคม'; $('#stErr').classList.add('on'); return stUI(); }
+  const q=stQ(), want=LS.get('stCam',''), base={facingMode:{ideal:'environment'},width:{ideal:q.w},height:{ideal:Math.round(q.w*9/16)},frameRate:{ideal:q.fps}};
+  try{
+    try{ ST.stream=await navigator.mediaDevices.getUserMedia({video:want?Object.assign({deviceId:{exact:want}},base):base,audio:false}); }
+    catch(e){ if(!want) throw e; LS.del('stCam'); ST.stream=await navigator.mediaDevices.getUserMedia({video:base,audio:false}); }
+    if(!stActive()){ stCamStop(); ST.state='off'; return; }
+    const v=$('#stVideo'); v.srcObject=ST.stream; await v.play().catch(()=>{});
+    const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput'), cur=ST.stream.getVideoTracks()[0].getSettings().deviceId;
+    $('#stCam').innerHTML=devs.map((d,i)=>`<option value="${esc(d.deviceId)}" ${d.deviceId===cur?'selected':''}>${esc(d.label||'Camera '+(i+1))}</option>`).join('');
+    ST.stream.getVideoTracks()[0].onended=()=>{ if(ST.state==='rec') stStop(true,'กล้องหลุด'); ST.state='nocam'; stUI(); };
+    ST.state='idle';
+  }catch(err){ ST.state='nocam'; $('#stErr').innerHTML='เปิดกล้องไม่ได้: '+esc(err.message)+'<br><br>กดอนุญาตให้เว็บใช้กล้อง แล้วรีเฟรชหน้านี้'; $('#stErr').classList.add('on'); }
+  stUI();
+}
+function stCamStop(){ if(ST.stream){ ST.stream.getTracks().forEach(t=>t.stop()); ST.stream=null; } $('#stVideo').srcObject=null; }
+
+/* ── recording: webcam → canvas (scaled + time/tracking stamp) → low-bitrate MediaRecorder ── */
+function stMime(){ return ['video/mp4;codecs=avc1.42E01E','video/mp4','video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m))||''; }
+function stStart(code){
+  const tagger=$('#stTagger').value;
+  if(!tagger) return stWarn('เลือกผู้แพ็คด้านขวาก่อน แล้วยิงใหม่');
+  if(ST.state!=='idle'||!ST.stream) return stWarn(ST.state==='busy'?'กำลังบันทึกคลิปก่อนหน้า — รอ 1 วินาทีแล้วยิงใหม่':'กล้องยังไม่พร้อม');
+  if(!window.MediaRecorder) return stWarn('เบราว์เซอร์นี้อัดวิดีโอไม่ได้ — ใช้ Chrome');
+  const q=stQ(), v=$('#stVideo'), vw=v.videoWidth||q.w, vh=v.videoHeight||Math.round(q.w*9/16);
+  const W=Math.min(q.w,vw)&~1, H=Math.round(W*vh/vw)&~1, c=ST.canvas||(ST.canvas=document.createElement('canvas')); c.width=W; c.height=H;
+  const x=c.getContext('2d',{alpha:false}), fs=Math.max(13,Math.round(H/26)), t0=Date.now();
+  const cur=ST.cur={ id:'p'+t0.toString(36)+Math.random().toString(36).slice(2,6), tracking:code, carrier:carrierOf(code), tagger, client:$('#stClient').value.trim(), at:t0, account:session.email };
+  const draw=()=>{ if(v.readyState>=2) x.drawImage(v,0,0,W,H);
+    const d=new Date(), s=`${code}  ·  ${dmy(d,'/')} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}  ·  ${mmss((Date.now()-t0)/1000)}`;
+    x.fillStyle='rgba(0,0,0,.6)'; x.fillRect(0,H-fs*1.9,W,fs*1.9);
+    x.font=`700 ${fs}px Rajdhani, Sarabun, sans-serif`; x.textBaseline='middle'; x.fillStyle='#fff'; x.textAlign='left'; x.fillText(s,fs*.6,H-fs*.92,W-fs*8);
+    x.fillStyle='#C9A84C'; x.textAlign='right'; x.fillText('TESR Logistics',W-fs*.6,H-fs*.92); };
+  draw();
+  const mime=stMime(); ST.chunks=[];
+  try{ ST.rec=new MediaRecorder(c.captureStream(q.fps), Object.assign({videoBitsPerSecond:q.bps}, mime?{mimeType:mime}:{})); }
+  catch(e){ return stWarn('เริ่มอัดไม่ได้: '+e.message); }
+  ST.rec.ondataavailable=e=>{ if(e.data.size) ST.chunks.push(e.data); };
+  ST.rec.start(1000);
+  // frame clock in a worker: keeps drawing when the tab is in the background
+  try{ ST.ticker=new Worker(URL.createObjectURL(new Blob([`setInterval(()=>postMessage(0),${Math.round(1000/q.fps)})`],{type:'text/javascript'}))); ST.ticker.onmessage=draw; }
+  catch(e){ const h=setInterval(draw,Math.round(1000/q.fps)); ST.ticker={terminate:()=>clearInterval(h)}; }
+  const max=(+LS.get('stMax',10)||10)*60;
+  ST.timer=setInterval(()=>{ const s=(Date.now()-t0)/1000; $('#stTime').textContent=mmss(s); if(s>=max) stStop(true,'ครบ '+max/60+' นาที หยุดอัตโนมัติ'); },500);
+  ST.state='rec'; ST.other=null; $('#stTime').textContent='00:00'; stTone('start'); stUI(); keepAwake(true);
+}
+function stStop(keep,why){
+  if(ST.state!=='rec') return Promise.resolve();
+  const cur=ST.cur, rec=ST.rec; ST.state='busy'; clearInterval(ST.timer); stUI();
+  return new Promise(done=>{
+    rec.onstop=async()=>{
+      ST.ticker?.terminate(); ST.ticker=null;
+      const type=(rec.mimeType||'video/webm').split(';')[0], blob=new Blob(ST.chunks,{type}); ST.chunks=[]; ST.rec=null; ST.cur=null;
+      if(keep && blob.size>0){
+        const d=new Date(cur.at);
+        Object.assign(cur,{ dur:Math.round((Date.now()-cur.at)/1000), size:blob.size, mime:type, blob, status:'wait', pct:0, note:why||'',
+          name:`PACK_${safeName(cur.tracking)}_${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}_${pad2(d.getHours())}${pad2(d.getMinutes())}${pad2(d.getSeconds())}.${type.includes('mp4')?'mp4':'webm'}` });
+        ST.queue.unshift(cur); await stSave(cur); stTone('stop'); toast(`บันทึกแล้ว ${cur.tracking} · ${mmss(cur.dur)} · ${fmtSize(cur.size)}`+(why?' ('+why+')':'')); stPump();
+      } else if(keep) stWarn('คลิปว่าง — ยิงใหม่อีกครั้ง');
+      ST.state=ST.stream?'idle':'nocam'; stRender(); stUI(); done();
+    };
+    try{ rec.stop(); }catch(e){ rec.onstop(); }
+  });
+}
+
+/* ── one scan = one decision ── */
+function stScan(raw){
+  const code=cleanCode(raw).toUpperCase().replace(/\s+/g,'');
+  if(code.length<6) return stWarn('บาร์โค้ดสั้นเกินไป ('+code+') — ยิงใหม่');
+  if(/^[A-Z]{2}\d{9}[A-Z]{2}$/.test(code) && !s10ok(code)) return stWarn('อ่านเลขพัสดุผิด ('+code+') — ยิงใหม่อีกครั้ง');
+  if(cfg.tagPattern){ try{ if(!new RegExp(cfg.tagPattern).test(code)) return stWarn(code+' ไม่ใช่รูปแบบเลข Tracking'); }catch(e){} }
+  if(ST.state==='rec'){
+    const cur=ST.cur.tracking;
+    if(code===cur){ if(Date.now()-ST.cur.at<3000) return; return stStop(true); }           // same label again = done (ignore double-read in first 3 s)
+    if(ST.other && ST.other.code===code && Date.now()-ST.other.at<15000) return stStop(true,'จบด้วยการยิงกล่องถัดไป').then(()=>stStart(code));   // new label twice = finish + start next
+    ST.other={code,at:Date.now()};
+    return stWarn(`กำลังอัด ${cur} อยู่ — ยิง ${cur} อีกครั้งเพื่อจบ (หรือยิง ${code} ซ้ำอีกครั้งเพื่อจบแล้วเริ่มกล่องใหม่)`);
+  }
+  stStart(code);
+}
+
+/* ── barcode gun (keyboard wedge). Uses physical key codes, so it still reads correctly when Windows is on the Thai keyboard ── */
+const stKey={buf:'',t:0,h:0};
+function stChar(e){ const c=e.code||''; let m;
+  if((m=/^Key([A-Z])$/.exec(c))) return m[1];
+  if((m=/^Digit(\d)$/.exec(c))) return e.shiftKey?(e.key.length===1?e.key:''):m[1];
+  if((m=/^Numpad(\d)$/.exec(c))) return m[1];
+  if(c==='Minus') return e.shiftKey?'_':'-'; if(c==='NumpadSubtract') return '-'; if(c==='Period'||c==='NumpadDecimal') return '.'; if(c==='Slash') return '/';
+  return e.key&&e.key.length===1?e.key:''; }
+document.addEventListener('keydown',e=>{
+  if(!stActive()) return;
+  const a=document.activeElement, inField=a && /INPUT|TEXTAREA|SELECT/.test(a.tagName);
+  if(inField){ if(a.id==='stManual' && e.key==='Enter'){ e.preventDefault(); const v=a.value; a.value=''; a.blur(); if(v.trim()) stScan(v); } return; }
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const now=performance.now(); if(now-stKey.t>150) stKey.buf=''; stKey.t=now; clearTimeout(stKey.h);
+  if(e.key==='Enter'||e.key==='Tab'){ e.preventDefault(); const code=stKey.buf; stKey.buf=''; if(code.length>=4) stScan(code); return; }   // never let the gun's Enter press a focused button
+  const ch=stChar(e); if(!ch) return; stKey.buf+=ch;
+  stKey.h=setTimeout(()=>{ const code=stKey.buf; stKey.buf=''; if(code.length>=8) stScan(code); },250);                                    // guns set up without an Enter suffix
+},true);
+
+/* ── upload queue: runs in the background while the next box is being packed ── */
+async function stSend(it,onp){
+  const DIRECT=15*1024*1024, CHUNK=4*1024*1024, b=it.blob;
+  if(b.size<=DIRECT){ const data=await readB64(b,b.size); await api('upload',{folderId:it.folderId,name:it.name,mime:it.mime,data,size:b.size}); return onp(1); }
+  const s=await api('begin',{folderId:it.folderId,name:it.name,mime:it.mime,size:b.size}); let done=false;
+  for(let start=0; start<b.size && !done; start+=CHUNK){ const end=Math.min(start+CHUNK,b.size)-1; const data=await readB64(b.slice(start,end+1),end-start+1);
+    const r=await api('chunk',{sessionUri:s.sessionUri,start,end,total:b.size,data}); done=!!r.done; onp((end+1)/b.size); }
+  if(!done) throw new Error('Drive ไม่ยืนยันว่ารับไฟล์ครบ');
+}
+async function stPump(){
+  if(ST.pumping||!session?.token) return; ST.pumping=true;
+  try{
+    for(;;){
+      const it=ST.queue.slice().reverse().find(q=>q.status==='wait'); if(!it) break;
+      it.status='up'; it.err=''; stRender();
+      try{
+        const d=new Date(it.at), rec={ tracking:it.tracking, carrier:it.carrier, ref:cfg?.orderRequired?'-':'', client:it.client, product:'', qty:'', result:'PACKED', tagger:it.tagger, signed:false, checklist:[], files:[it.name],
+          notes:`วิดีโอแพ็คสินค้า ${mmss(it.dur)} · เริ่ม ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`+(it.note?' · '+it.note:'') };
+        if(!it.folderId){ const c=await api('create',{record:rec}); Object.assign(it,{folderId:c.folderId,folderName:c.folderName,url:c.folderUrl,recId:c.id}); await stSave(it); }
+        if(!it.sent){ await stSend(it,p=>{ it.pct=Math.round(p*100); stRender(); }); it.sent=true; await stSave(it); }
+        await api('finish',{folderId:it.folderId,folderName:it.folderName,fileCount:1,record:Object.assign({},rec,{id:it.recId,url:it.url,files:undefined})});
+        it.status='done'; it.blob=null; await stDrop(it.id);
+      }catch(err){ it.status='err'; it.err=/Failed to fetch|NetworkError|Load failed/i.test(err.message||'')?'เน็ตหลุด — จะอัปใหม่เองอัตโนมัติ':friendlyErr(err.message||String(err)); if(err.auth) break; }
+      stRender();
+    }
+  }finally{ ST.pumping=false; stRender(); }
+  if(ST.queue.some(q=>q.status==='err')){ clearTimeout(ST.rt); ST.rt=setTimeout(()=>{ ST.queue.forEach(q=>{ if(q.status==='err') q.status='wait'; }); stPump(); },30000); }   // auto-retry (internet drops)
+}
+function stRender(){
+  const q=ST.queue, done=q.filter(i=>i.status==='done').length, pend=q.length-done;
+  $('#stEmpty').hidden=q.length>0;
+  $('#stCount').textContent=q.length?`${q.length} กล่อง · ${fmtSize(q.reduce((a,i)=>a+(i.size||0),0))}${pend?` · รออัป ${pend}`:' · ขึ้น Drive ครบ ✓'}`:'';
+  const lab={wait:'รออัป',up:'กำลังอัป',done:'บน Drive ✓',err:'จะลองใหม่'};
+  $('#stList').innerHTML=q.map((i,n)=>{ const d=new Date(i.at); return `<li>
+    <span class="tk">${esc(i.tracking)}</span><span class="pill ${i.status==='done'?'PACKED':i.status==='err'?'error':i.status}">${lab[i.status]}${i.status==='up'&&i.pct?' '+i.pct+'%':''}</span>
+    <span class="mt">${pad2(d.getHours())}:${pad2(d.getMinutes())} · ${mmss(i.dur||0)} · ${fmtSize(i.size||0)} · ${esc(i.tagger)}${i.client?' · '+esc(i.client):''}${i.err?` · <span style="color:var(--bad)">${esc(i.err)}</span>`:''}
+      ${i.url?` · <a class="linkbtn" href="${esc(i.url)}" target="_blank" rel="noopener">เปิดโฟลเดอร์</a> · <button type="button" class="linkbtn" data-cp="${n}">คัดลอกลิงก์</button>`:''}</span>
+    ${i.status==='up'?`<span class="bar"><i style="width:${i.pct||3}%"></i></span>`:''}</li>`; }).join('');
+}
+$('#stList').addEventListener('click',e=>{ const b=e.target.closest('[data-cp]'); if(b){ copy(ST.queue[+b.dataset.cp].url,'คัดลอกลิงก์แล้ว'); b.blur(); } });
+
+/* ── station settings ── */
+function stQInfo(){ const q=stQ(), mb=q.bps/8*60/1e6; $('#stQInfo').textContent=`${q.label}: ประมาณ ${mb.toFixed(1)} MB ต่อนาที — แพ็คกล่องละ 2 นาที × 50 กล่อง ≈ ${Math.round(mb*100)} MB/วัน · ไม่อัดเสียง`; }
+function stApply(){
+  const cur=$('#stTagger').value||LS.get('stTagger','')||defTagger();
+  $('#stTagger').innerHTML='<option value="">— เลือก —</option>'+(cfg.staff||[]).map(s=>`<option ${s===cur?'selected':''}>${esc(s)}</option>`).join('');
+  $('#stClient').value=$('#stClient').value||LS.get('stClient',''); $('#stQ').value=LS.get('stQ','std'); $('#stMax').value=String(LS.get('stMax',10)); stQInfo(); stUI();
+}
+$('#stTagger').onchange=e=>{ LS.set('stTagger',e.target.value); e.target.blur(); stUI(); };
+$('#stClient').onchange=e=>{ LS.set('stClient',e.target.value.trim()); };
+$('#stClient').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); e.target.blur(); LS.set('stClient',e.target.value.trim()); } });
+$('#stCam').onchange=e=>{ LS.set('stCam',e.target.value); e.target.blur(); stCamStart(); };
+$('#stQ').onchange=e=>{ LS.set('stQ',e.target.value); e.target.blur(); stQInfo(); stCamStart(); };
+$('#stMax').onchange=e=>{ LS.set('stMax',+e.target.value); e.target.blur(); };
+$('#stStop').onclick=e=>{ e.currentTarget.blur(); stStop(true); };
+$('#stCancel').onclick=e=>{ e.currentTarget.blur(); if(confirm('ทิ้งคลิปนี้ ไม่บันทึก?')) stStop(false); };
+function stEnter(){ stApply(); stRender(); stCamStart(); keepAwake(true); }
+function stLeave(){ if(ST.state!=='rec'&&ST.state!=='busy'){ stCamStop(); ST.state='off'; if(!uploading) keepAwake(false); } }
+async function stInit(){   // after login: bring back clips that had not reached Drive yet
+  const rows=await stDbDo('readonly',s=>s.getAll())||[];
+  for(const r of rows.sort((a,b)=>b.at-a.at)) if(!ST.queue.some(q=>q.id===r.id)) ST.queue.push(Object.assign(r,{status:'wait',pct:0}));
+  ST.queue.sort((a,b)=>b.at-a.at); stRender(); stPump();
+}
+window.addEventListener('beforeunload',e=>{ if(ST.state==='rec'){ e.preventDefault(); e.returnValue=''; } });
+window.addEventListener('online',()=>{ ST.queue.forEach(q=>{ if(q.status==='err') q.status='wait'; }); stPump(); });
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && stActive()) keepAwake(true); });
 
 /* ═══ Init ═══ */
 $('#verTag').textContent=APP_VERSION; setTheme(document.documentElement.dataset.theme);
