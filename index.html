@@ -422,6 +422,10 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 }
 
 .mwho button{color:#C9C7C1;padding:8px}
+.ver-pill{background:var(--gold);color:#0A0A0B;border-color:var(--gold);font-size:14px;padding:5px 12px}
+.topbar .ver-pill::before{content:"เวอร์ชัน "}
+.mver{display:none}
+@media(max-width:820px){.mver{display:block;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.08em;color:var(--gold);margin-top:2px;white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -462,7 +466,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 <aside class="sidebar">
   <div class="brand">
     <img src="tesr-logo.png" alt="TESR">
-    <div><div class="wm">T<b>E</b>SR</div><div class="tag">ROBOTICS | AI | AUTOMATION</div></div>
+    <div><div class="wm">T<b>E</b>SR</div><div class="tag">ROBOTICS | AI | AUTOMATION</div><div class="mver">LOGISTICS QC · <span data-ver></span></div></div>
   </div>
   <div class="mwho"><button id="mTheme" title="Theme"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><button id="mLogout" title="Sign out"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button></div>
   <div class="unit">TESR LOGISTICS QC <span data-ver style="color:var(--gold);margin-left:4px"></span></div>
@@ -767,7 +771,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.5.1';
+const APP_VERSION = 'v1.5.2';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwCh3teWYeVpXZH6Z5xZHNQZABv2iyq-Ag8YIvsixjDyJTGbYodo_Vgb6nKgUfa4dMa/exec';
 
