@@ -771,7 +771,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.5.2';
+const APP_VERSION = 'v1.5.3';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwCh3teWYeVpXZH6Z5xZHNQZABv2iyq-Ag8YIvsixjDyJTGbYodo_Vgb6nKgUfa4dMa/exec';
 
@@ -925,7 +925,7 @@ function startApp(){
   api('me').then(j=>{ session.config=j.config; session.role=j.role; session.name=j.name||session.name||''; LS.set('session',session); cfg=j.config; applyConfig(); }).catch(()=>{});
 }
 /* inspectors who are not in the attendance sheet */
-const EXTRA_STAFF=['Anon Morsuwan'], OWN_NAME={'ceo.anoney.potter@gmail.com':'Anon Morsuwan'};
+const EXTRA_STAFF=['อานนท์ หม้อสุวรรณ'], OWN_NAME={'ceo.anoney.potter@gmail.com':'อานนท์ หม้อสุวรรณ'};
 function applyConfig(){
   cfg.staff=[...new Set([...(cfg.staff||[]),...EXTRA_STAFF])];
   $('#clientList').innerHTML=(cfg.clients||[]).map(c=>`<option value="${esc(c)}">`).join('');
