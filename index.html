@@ -683,7 +683,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
         </div>
         <div class="field"><label for="aMax">ขนาดไฟล์สูงสุดต่อไฟล์ (MB)</label><input class="input" id="aMax" type="number" min="5" max="500"></div>
         <label class="switch"><input type="checkbox" id="aOrderReq"> บังคับกรอกเลขอ้างอิง (Order / Ref)</label>
-        <label class="switch"><input type="checkbox" id="aSignReq"> บังคับเซ็นลายเซ็น</label>
+        <label class="switch" hidden><input type="checkbox" id="aSignReq"> บังคับเซ็นลายเซ็น</label>
         <hr style="border:0;border-top:1px dashed var(--line);margin:14px 0">
         <div class="field"><label for="aAdmins">อีเมล Admin <span>— 1 อีเมลต่อบรรทัด</span></label><textarea class="input" id="aAdmins" style="min-height:64px"></textarea></div>
         <div class="field"><label for="aStaffEm">บัญชี Staff เพิ่มเติม <span>— เช่น tesrshop@gmail.com (พนักงานใน Work tracking log ไม่ต้องใส่)</span></label><textarea class="input" id="aStaffEm" style="min-height:64px"></textarea></div>
@@ -771,7 +771,7 @@ details.more-sec summary #moreSum{margin-left:auto;text-align:right;max-width:50
 /* ═══════════════════════════════════════════════════════════
    TESR Logistics — Fulfillment QC & Evidence Record
    ═══════════════════════════════════════════════════════════ */
-const APP_VERSION = 'v1.5.3';
+const APP_VERSION = 'v1.5.4';
 /* Admin: ใส่ URL /exec ของ Apps Script ที่นี่ แล้วพนักงานไม่ต้องตั้งค่าเอง */
 const DEFAULT_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwCh3teWYeVpXZH6Z5xZHNQZABv2iyq-Ag8YIvsixjDyJTGbYodo_Vgb6nKgUfa4dMa/exec';
 
@@ -925,9 +925,10 @@ function startApp(){
   api('me').then(j=>{ session.config=j.config; session.role=j.role; session.name=j.name||session.name||''; LS.set('session',session); cfg=j.config; applyConfig(); }).catch(()=>{});
 }
 /* inspectors who are not in the attendance sheet */
-const EXTRA_STAFF=['อานนท์ หม้อสุวรรณ'], OWN_NAME={'ceo.anoney.potter@gmail.com':'อานนท์ หม้อสุวรรณ'};
+const EXTRA_STAFF=['อานนท์ หม้อสุวรรณ','ครีม','ป็อป','น้องฝึกงาน','Part-time'], OWN_NAME={'ceo.anoney.potter@gmail.com':'อานนท์ หม้อสุวรรณ'};
 function applyConfig(){
   cfg.staff=[...new Set([...(cfg.staff||[]),...EXTRA_STAFF])];
+  cfg.signRequired=false;   // ลายเซ็นไม่บังคับเสมอ (ตัดสินใจ 24/11/2026)
   $('#clientList').innerHTML=(cfg.clients||[]).map(c=>`<option value="${esc(c)}">`).join('');
   const prev=checkedItems();
   $('#checks').innerHTML=(cfg.checklist||[]).map((c,i)=>`<label class="chk"><input type="checkbox" data-i="${i}" ${prev.includes(c)?'checked':''}><span class="bx"><svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg></span><span>${esc(c)}</span></label>`).join('');
