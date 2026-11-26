@@ -13,6 +13,7 @@
  * actions (POST, JSON, Content-Type: text/plain):
  *   public : info, login
  *   user   : me, search, create, upload, begin, chunk, finish
+ *            ordersPut (TESR Track Count ส่งออเดอร์จาก PDF), orders (ออเดอร์ล่าสุด + สถานะแพ็ค), lookup (1 Tracking → ออเดอร์ + หลักฐาน)
  *   admin  : saveConfig, setPassword, logoutAll
  *
  * ติดตั้งครั้งแรก (ดู README.md):
@@ -24,7 +25,7 @@
  */
 
 const CONFIG = {
-  VERSION:        'v1.4',
+  VERSION:        'v1.6',
   ROOT_FOLDER_ID: '17wFTaIpnOWenaLl3YrI-qTqqUTU7bKY9', // "Logistic-tracking-and-evidence" (owner ceo.anoney.potter@gmail.com)
   LOG_SHEET_NAME: 'TESR Logistics QC Log',
   // รายชื่อพนักงานอ่านสดจาก "Work tracking log" แท็บ Employees (ระบบลงเวลา) — login = email + phone, active = TRUE
@@ -93,6 +94,9 @@ function doPost(e) {
       case 'finish':      return json_(finish_(b, auth_(b)));
       case 'saveConfig':  return json_(saveConfig_(b, auth_(b, true)));
       case 'setPassword': return json_(setPassword_(b, auth_(b, true)));
+      case 'ordersPut':   return json_(ordersPut_(b, auth_(b)));
+      case 'orders':      auth_(b); return json_(orders_(b));
+      case 'lookup':      auth_(b); return json_(lookup_(b));
       case 'logoutAll':   auth_(b, true); P.setProperty('EPOCH', String(Date.now())); return json_({ ok: true });
       default: throw new Error('unknown action "' + b.action + '" — หน้าเว็บอาจเป็นเวอร์ชันเก่า');
     }
@@ -352,6 +356,101 @@ function search_(b) {
                result: v[8], checklist: v[9], tagger: v[10], signed: v[11] === 'Yes', account: v[12], files: v[13], folder: v[14], url: v[15], notes: str_(v[16]) });
   }
   return { ok: true, rows: out, total: vals.length };
+}
+
+/* ═══ orders (from TESR Track Count) ═══════════════════════════ */
+/* แท็บ "Orders" ในไฟล์ QC Log: 1 แถว = 1 Tracking (อัปเดตทับเมื่อส่งซ้ำ) — เก็บเฉพาะเลขพัสดุ จำนวน สินค้า เลขคำสั่งซื้อ (ไม่เก็บชื่อ/ที่อยู่/เบอร์ผู้รับ) */
+const OCOLS = ['Tracking No.', 'Qty', 'Unit', 'Items', 'Items JSON', 'Order No.', 'Qty Sure', 'Source File', 'Page', 'Imported At', 'Imported By'];
+function ordersSheet_() {
+  const ss = getSheet_().getParent();
+  let sh = ss.getSheetByName('Orders');
+  if (!sh) {
+    sh = ss.insertSheet('Orders'); sh.appendRow(OCOLS); sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, OCOLS.length).setFontWeight('bold').setBackground('#0A0A0B').setFontColor('#C9A84C');
+    sh.getRange('A:A').setNumberFormat('@'); sh.getRange('F:F').setNumberFormat('@');
+  }
+  return sh;
+}
+function normTrk_(t) { return cleanCode_(t).toUpperCase().replace(/\s+/g, ''); }
+function itemsText_(items) { return (items || []).map(function (i) { return String(i.name || 'สินค้า') + ' ×' + (Number(i.qty) || 1) + (i.unit ? ' ' + i.unit : ''); }).join(' + '); }
+function ordersPut_(b, s) {
+  const list = Array.isArray(b.orders) ? b.orders.slice(0, 500) : [];
+  if (!list.length) return { ok: true, added: 0, updated: 0 };
+  const lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    const sh = ordersSheet_(), last = sh.getLastRow(), idx = {};
+    if (last > 1) sh.getRange(2, 1, last - 1, 1).getValues().forEach(function (r, i) { idx[String(r[0]).replace(/^'/, '').toUpperCase()] = i + 2; });
+    const now = new Date(), add = []; let updated = 0;
+    list.forEach(function (o) {
+      const t = normTrk_(o.tracking); if (!/^[A-Z0-9\-]{6,40}$/.test(t)) return;
+      const items = (Array.isArray(o.items) ? o.items : []).slice(0, 20).map(function (i) { return { name: String(i.name || '').slice(0, 120), qty: Math.max(0, Math.min(9999, Number(i.qty) || 0)), unit: String(i.unit || '').slice(0, 12) }; });
+      const row = [t, Math.max(0, Math.min(9999, Number(o.qty) || 0)), String(o.unit || '').slice(0, 12), itemsText_(items).slice(0, 500), JSON.stringify(items).slice(0, 4000),
+                   cleanCode_(o.order), o.sure ? 'Yes' : 'No', String(o.file || '').slice(0, 120), Number(o.page) || '', now, s.email];
+      const safe = row.map(function (v) { return typeof v === 'string' && /^[=+\-@]/.test(v) ? "'" + v : v; });
+      if (idx[t]) { sh.getRange(idx[t], 1, 1, OCOLS.length).setValues([safe]); updated++; }
+      else { add.push(safe); idx[t] = -1; }
+    });
+    if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, OCOLS.length).setValues(add);
+    return { ok: true, added: add.length, updated: updated };
+  } finally { lock.releaseLock(); }
+}
+function orderRow_(v) {
+  let items = []; try { items = JSON.parse(v[4] || '[]'); } catch (e) {}
+  return { tracking: str_(v[0]), qty: Number(v[1]) || 0, unit: str_(v[2]), items: items, itemsText: str_(v[3]), order: str_(v[5]), sure: v[6] === 'Yes',
+           file: str_(v[7]), page: v[8], importedAt: v[9] instanceof Date ? v[9].toISOString() : str_(v[9]), importedBy: str_(v[10]) };
+}
+/** QC records keyed by tracking (latest first) — reads the last N rows of the QC log */
+function packedMap_(n) {
+  const sh = getSheet_(), last = sh.getLastRow(), map = {};
+  if (last < 2) return map;
+  const from = Math.max(2, last - (n || 6000) + 1), vals = sh.getRange(from, 1, last - from + 1, COLS.length).getValues();
+  for (let i = vals.length - 1; i >= 0; i--) {
+    const v = vals[i], t = str_(v[2]).toUpperCase(); if (!t) continue;
+    (map[t] = map[t] || []).push({ at: v[0] instanceof Date ? v[0].toISOString() : String(v[0]), id: v[1], result: v[8], tagger: v[10], url: v[15], files: v[13], qty: v[7] });
+  }
+  return map;
+}
+/** ออเดอร์ที่นำเข้าใน N วันล่าสุด (หรือเฉพาะ trackings ที่ขอ) + สถานะว่ามีหลักฐาน QC แล้วหรือยัง */
+function orders_(b) {
+  const sh = ordersSheet_(), last = sh.getLastRow(), want = {}, days = Math.min(Number(b.days) || 14, 120);
+  (Array.isArray(b.trackings) ? b.trackings : []).slice(0, 2000).forEach(function (t) { want[normTrk_(t)] = 1; });
+  const useWant = Object.keys(want).length > 0, since = Date.now() - days * 864e5, out = [];
+  if (last > 1) {
+    const from = Math.max(2, last - 5000 + 1), vals = sh.getRange(from, 1, last - from + 1, OCOLS.length).getValues();
+    vals.forEach(function (v) { const o = orderRow_(v); if (useWant ? want[o.tracking.toUpperCase()] : (v[9] instanceof Date && v[9].getTime() >= since)) out.push(o); });
+  }
+  const packed = packedMap_(), status = {};
+  out.forEach(function (o) { const r = packed[o.tracking.toUpperCase()]; if (r) o.packed = r[0]; });
+  if (useWant) Object.keys(want).forEach(function (t) { if (packed[t]) status[t] = packed[t][0]; });
+  return { ok: true, orders: out, status: status, time: new Date().toISOString() };
+}
+/** 1 Tracking → ออเดอร์ (จำนวนที่ต้องใส่) + ประวัติ QC + ไฟล์หลักฐานในโฟลเดอร์ */
+function lookup_(b) {
+  const t = normTrk_(b.tracking); if (!t) throw new Error('ต้องมีเลข Tracking');
+  let order = null;
+  const osh = ordersSheet_();
+  if (osh.getLastRow() > 1) {
+    const f = osh.getRange(2, 1, osh.getLastRow() - 1, 1).createTextFinder(t).matchEntireCell(true).matchCase(false).findAll();
+    if (f.length) order = orderRow_(osh.getRange(f[f.length - 1].getRow(), 1, 1, OCOLS.length).getValues()[0]);
+  }
+  const records = [], sh = getSheet_();
+  if (sh.getLastRow() > 1) {
+    const hits = sh.getRange(2, 3, sh.getLastRow() - 1, 1).createTextFinder(t).matchEntireCell(true).matchCase(false).findAll();
+    hits.slice(-5).reverse().forEach(function (h) {
+      const v = sh.getRange(h.getRow(), 1, 1, COLS.length).getValues()[0];
+      const r = { at: v[0] instanceof Date ? v[0].toISOString() : String(v[0]), id: v[1], tracking: str_(v[2]), result: v[8], tagger: v[10], qty: v[7], product: v[6], notes: str_(v[16]), url: v[15], files: [] };
+      const m = /folders\/([\w-]+)/.exec(String(v[15]));
+      if (m && b.files !== false) {
+        try {
+          const it = folderUnderRoot_(m[1]).getFiles(), fl = [];
+          while (it.hasNext() && fl.length < 30) { const f = it.next(); if (f.isTrashed()) continue; fl.push({ id: f.getId(), name: f.getName(), mime: f.getMimeType(), size: f.getSize() }); }
+          fl.sort(function (a, c) { return a.name < c.name ? -1 : 1; }); r.files = fl;
+        } catch (e) { r.filesError = String(e.message || e); }
+      }
+      records.push(r);
+    });
+  }
+  return { ok: true, tracking: t, order: order, records: records };
 }
 
 /* ═══ helpers ═════════════════════════════════════════════════ */
